@@ -30,4 +30,5 @@ compose-private.yml
 /backend/_example/*/vendor
 http-client.env.json
 /playwright-report/
-.balance-psql
+psql
+psql-local

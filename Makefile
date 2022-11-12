@@ -5,8 +5,15 @@ swagger:
 	swag init --generalInfo cmd/balance/main.go --output docs
 	swag fmt
 
-balance-local:
+local:
 	go run ./cmd/balance/main.go
 
-balance-container:
+docker:
+	docker compose --project-directory ./build/balance up psql --detach
+	sleep 3
+	docker compose --project-directory ./build/balance up balance
+
+docker-build:
+	docker compose --project-directory ./build/balance up psql --detach
+	sleep 3
 	docker compose --project-directory ./build/balance up --build balance
