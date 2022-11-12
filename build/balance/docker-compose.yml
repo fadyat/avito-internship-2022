@@ -1,0 +1,28 @@
+version: "3.7"
+
+services:
+
+  psql:
+    container_name: "balance-psql"
+    image: postgres:14.5-alpine
+    restart: always
+    environment:
+      POSTGRES_USER: "postgres"
+      POSTGRES_DB: "postgres"
+      POSTGRES_PASSWORD: "postgres"
+    volumes:
+      - ".balance-psql:/var/lib/postgresql/data"
+    ports:
+      - "5432:5432"
+
+  balance:
+    container_name: "balance"
+    build:
+      context: ../../.
+      dockerfile: ./build/balance/Dockerfile
+    depends_on: [ psql ]
+    env_file:
+      - .env.local
+    ports:
+      - "80:8080"
+    command: [ "/main" ]

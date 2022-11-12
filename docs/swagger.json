@@ -1,0 +1,69 @@
+{
+    "schemes": [
+        "http"
+    ],
+    "swagger": "2.0",
+    "info": {
+        "description": "This is a sample server for a balance API.",
+        "title": "Avito Internship 2022 Balance API",
+        "contact": {
+            "name": "Artyom Fadeyev",
+            "url": "https://github.com/fadyat"
+        },
+        "version": "1.0.0"
+    },
+    "host": "localhost:80",
+    "basePath": "/api/v1",
+    "paths": {
+        "/api/v1/health": {
+            "get": {
+                "description": "Healthcheck endpoint, that checks if the service is alive and database connection is working.",
+                "tags": [
+                    "health"
+                ],
+                "summary": "Healthcheck",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/responses.HealthSuccess"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/responses.HealthError"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "responses.HealthError": {
+            "type": "object",
+            "properties": {
+                "description": {
+                    "type": "string"
+                },
+                "message": {
+                    "type": "string"
+                },
+                "status_code": {
+                    "type": "integer"
+                }
+            }
+        },
+        "responses.HealthSuccess": {
+            "type": "object",
+            "properties": {
+                "message": {
+                    "type": "string"
+                },
+                "status_code": {
+                    "type": "integer"
+                }
+            }
+        }
+    }
+}

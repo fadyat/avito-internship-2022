@@ -1,0 +1,46 @@
+basePath: /api/v1
+definitions:
+  responses.HealthError:
+    properties:
+      description:
+        type: string
+      message:
+        type: string
+      status_code:
+        type: integer
+    type: object
+  responses.HealthSuccess:
+    properties:
+      message:
+        type: string
+      status_code:
+        type: integer
+    type: object
+host: localhost:80
+info:
+  contact:
+    name: Artyom Fadeyev
+    url: https://github.com/fadyat
+  description: This is a sample server for a balance API.
+  title: Avito Internship 2022 Balance API
+  version: 1.0.0
+paths:
+  /api/v1/health:
+    get:
+      description: Healthcheck endpoint, that checks if the service is alive and database
+        connection is working.
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/responses.HealthSuccess'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/responses.HealthError'
+      summary: Healthcheck
+      tags:
+      - health
+schemes:
+- http
+swagger: "2.0"
