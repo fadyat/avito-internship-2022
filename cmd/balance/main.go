@@ -13,7 +13,9 @@ import (
 	"github.com/jackc/pgx/v5"
 	"github.com/joho/godotenv"
 	"github.com/kelseyhightower/envconfig"
-	"log"
+	"go.uber.org/zap"
+	"go.uber.org/zap/zapcore"
+	"os"
 	"time"
 )
 
@@ -28,15 +30,26 @@ import (
 // @contact.name Artyom Fadeyev
 // @contact.url  https://github.com/fadyat
 func main() {
-	cfg, err := initConfig()
+	logger := initLogger()
+	defer func() {
+		_ = logger.Sync()
+	}()
+
+	cfg, err := initConfig(logger)
 	if err != nil {
-		log.Fatal(err)
+		logger.Fatal("failed to init config", zap.Error(err))
 	}
 
 	psql, err := initDB(cfg)
+	defer func() {
+		if err = psql.Close(context.Background()); err != nil {
+			logger.Fatal("failed to close db connection", zap.Error(err))
+		}
+	}()
 	if err != nil {
-		log.Fatal(err)
+		logger.Fatal("failed to init db", zap.Error(err))
 	}
+	logger.Debug("db initialized")
 
 	app := fiber.New(fiber.Config{
 		ReadTimeout:  5 * time.Second,
@@ -58,13 +71,21 @@ func main() {
 	healthHandler := handlers.NewHealthHandler(healthRepo)
 	v1.Get("/health", healthHandler.HealthCheck)
 
-	log.Panic(app.Listen(":" + cfg.HTTPPort))
+	err = app.Listen(":" + cfg.HTTPPort)
+	defer func() {
+		if err = app.Shutdown(); err != nil {
+			logger.Fatal("failed to shutdown server", zap.Error(err))
+		}
+	}()
+	if err != nil {
+		logger.Fatal("failed to start server", zap.Error(err))
+	}
 }
 
-func initConfig() (*config.HTTPConfig, error) {
+func initConfig(logger *zap.Logger) (*config.HTTPConfig, error) {
 	var cfg config.HTTPConfig
 	if err := godotenv.Load(".env"); err != nil {
-		log.Printf("[DEBUG] Error loading .env file: %s", err)
+		logger.Debug("failed to load .env file", zap.Error(err))
 	}
 
 	if err := envconfig.Process("", &cfg); err != nil {
@@ -81,4 +102,18 @@ func initDB(cfg *config.HTTPConfig) (*pgx.Conn, error) {
 	}
 
 	return psql, nil
+}
+
+func initLogger() *zap.Logger {
+	encoderCfg := zap.NewProductionEncoderConfig()
+	encoderCfg.EncodeTime = zapcore.ISO8601TimeEncoder
+	logLevel := zap.NewAtomicLevelAt(zap.DebugLevel)
+
+	loggerCore := zapcore.NewCore(
+		zapcore.NewJSONEncoder(encoderCfg),
+		zapcore.Lock(os.Stdout),
+		logLevel,
+	)
+	logger := zap.New(loggerCore)
+	return logger
 }
