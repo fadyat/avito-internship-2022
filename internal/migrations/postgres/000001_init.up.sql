@@ -11,7 +11,7 @@ create table services
 (
     id   int generated always as identity,
     name varchar(255) not null,
-    link varchar(255) default null,
+    url varchar(255) default null,
 
     primary key (id)
 );

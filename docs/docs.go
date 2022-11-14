@@ -56,6 +56,12 @@ const docTemplate = `{
                             "$ref": "#/definitions/responses.Services"
                         }
                     },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/responses.ErrorResp"
+                        }
+                    },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
@@ -132,6 +138,24 @@ const docTemplate = `{
                             "$ref": "#/definitions/models.OuterService"
                         }
                     },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/responses.ErrorResp"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/responses.ErrorResp"
+                        }
+                    },
+                    "422": {
+                        "description": "Unprocessable Entity",
+                        "schema": {
+                            "$ref": "#/definitions/responses.ErrorResp"
+                        }
+                    },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
@@ -145,12 +169,20 @@ const docTemplate = `{
     "definitions": {
         "dto.OuterService": {
             "type": "object",
+            "required": [
+                "name"
+            ],
             "properties": {
-                "link": {
-                    "type": "string"
-                },
                 "name": {
-                    "type": "string"
+                    "description": "@description: Name is a name of the service.\n@example:     aboba-service",
+                    "type": "string",
+                    "maxLength": 255,
+                    "minLength": 1
+                },
+                "url": {
+                    "description": "@description: URL is a link to the implementation of the service.\n@example:     http://aboba-service.com",
+                    "type": "string",
+                    "maxLength": 255
                 }
             }
         },
@@ -158,13 +190,15 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "id": {
+                    "description": "@description: ID is given unique identifier of the service.\n@example:     1",
                     "type": "integer"
                 },
-                "link": {
-                    "description": "@description: Link is a link to the implementation of the service.",
+                "name": {
+                    "description": "@description: Name is a name of the service.\n@example:     aboba-service",
                     "type": "string"
                 },
-                "name": {
+                "url": {
+                    "description": "@description: URL is a link to the implementation of the service.\n@example:     http://aboba-service.com",
                     "type": "string"
                 }
             }
@@ -173,13 +207,12 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "description": {
+                    "description": "@description: Description is a description of the error.\n@example:     invalid request with id=1",
                     "type": "string"
                 },
                 "message": {
+                    "description": "@description: Message is a message of the error.\n@example:     invalid request",
                     "type": "string"
-                },
-                "status_code": {
-                    "type": "integer"
                 }
             }
         },
@@ -187,10 +220,8 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "message": {
+                    "description": "@description: Message is a success message.\n@example:     OK",
                     "type": "string"
-                },
-                "status_code": {
-                    "type": "integer"
                 }
             }
         },
@@ -198,7 +229,8 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "id": {
-                    "type": "integer"
+                    "description": "@description: ID is given unique identifier of the service.\n@example:     1",
+                    "type": "string"
                 }
             }
         },
@@ -206,6 +238,7 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "services": {
+                    "description": "@description: Services is a list of services.\n@example:     [{\"id\":1,\"name\":\"aboba-service\",\"url\":\"http://aboba-service.com\"}]",
                     "type": "array",
                     "items": {
                         "$ref": "#/definitions/models.OuterService"

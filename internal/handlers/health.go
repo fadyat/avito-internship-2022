@@ -3,17 +3,20 @@ package handlers
 import (
 	"github.com/fadyat/avito-internship-2022/internal/responses"
 	"github.com/fadyat/avito-internship-2022/internal/services"
+	"github.com/go-playground/validator/v10"
 	"github.com/gofiber/fiber/v2"
 )
 
 type HealthHandler struct {
 	s services.IHealthService
+	v *validator.Validate
 }
 
-func NewHealthHandler(s services.IHealthService) *HealthHandler {
-	return &HealthHandler{
-		s: s,
-	}
+func NewHealthHandler(
+	s services.IHealthService,
+	v *validator.Validate,
+) *HealthHandler {
+	return &HealthHandler{s: s, v: v}
 }
 
 // healthCheck godoc
@@ -28,12 +31,10 @@ func (h *HealthHandler) healthCheck(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusInternalServerError).JSON(&responses.ErrorResp{
 			Message:     "Database connection error",
 			Description: err.Error(),
-			StatusCode:  fiber.StatusInternalServerError,
 		})
 	}
 
 	return c.Status(fiber.StatusOK).JSON(&responses.HealthSuccess{
-		Message:    "OK",
-		StatusCode: fiber.StatusOK,
+		Message: "OK",
 	})
 }

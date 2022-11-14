@@ -6,6 +6,7 @@ import (
 	_ "github.com/fadyat/avito-internship-2022/docs"
 	"github.com/fadyat/avito-internship-2022/internal/config"
 	"github.com/fadyat/avito-internship-2022/internal/handlers"
+	"github.com/go-playground/validator/v10"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gofiber/fiber/v2/middleware/logger"
@@ -30,12 +31,12 @@ import (
 // @contact.name Artyom Fadeyev
 // @contact.url  https://github.com/fadyat
 func main() {
-	logs := initLogger()
-	defer func() {
-		_ = logs.Sync()
-	}()
+	validate := initValidator()
 
-	cfg, err := initConfig(logs)
+	logs := initLogger()
+	defer func() { _ = logs.Sync() }()
+
+	cfg, err := initConfig(logs, validate)
 	if err != nil {
 		logs.Fatal("failed to init config", zap.Error(err))
 	}
@@ -52,7 +53,7 @@ func main() {
 	logs.Debug("db initialized")
 
 	app := initApp()
-	handlers.InitRoutes(app, psql, logs)
+	handlers.InitRoutes(app, psql, logs, validate)
 
 	err = app.Listen(":" + cfg.HTTPPort)
 	defer func() {
@@ -65,13 +66,18 @@ func main() {
 	}
 }
 
-func initConfig(logs *zap.Logger) (*config.HTTPConfig, error) {
+func initConfig(logs *zap.Logger, validate *validator.Validate) (*config.HTTPConfig, error) {
 	var cfg config.HTTPConfig
 	if err := godotenv.Load(".env"); err != nil {
 		logs.Debug("failed to load .env file", zap.Error(err))
 	}
 
 	if err := envconfig.Process("", &cfg); err != nil {
+		return nil, err
+	}
+
+	err := validate.Struct(cfg)
+	if err != nil {
 		return nil, err
 	}
 
@@ -92,12 +98,11 @@ func initLogger() *zap.Logger {
 	encoderCfg.EncodeTime = zapcore.ISO8601TimeEncoder
 	logLevel := zap.NewAtomicLevelAt(zap.DebugLevel)
 
-	loggerCore := zapcore.NewCore(
+	logs := zap.New(zapcore.NewCore(
 		zapcore.NewJSONEncoder(encoderCfg),
 		zapcore.Lock(os.Stdout),
 		logLevel,
-	)
-	logs := zap.New(loggerCore)
+	))
 	return logs
 }
 
@@ -121,4 +126,8 @@ func initApp() *fiber.App {
 	}))
 
 	return app
+}
+
+func initValidator() *validator.Validate {
+	return validator.New()
 }

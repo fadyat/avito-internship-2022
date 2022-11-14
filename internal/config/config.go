@@ -3,15 +3,15 @@ package config
 import "fmt"
 
 type HTTPConfig struct {
-	Debug          bool   `envconfig:"DEBUG" default:"false"`
-	HTTPPort       string `envconfig:"HTTP_PORT" default:"80"`
-	DatabaseDriver string `envconfig:"DB_DRIVER" default:"postgres"`
-	DatabaseHost   string `envconfig:"DB_HOST" default:"localhost"`
-	DatabasePort   string `envconfig:"DB_PORT" default:"5432"`
-	DatabaseUser   string `envconfig:"DB_USER" default:"postgres"`
-	DatabasePass   string `envconfig:"DB_PASS" default:"postgres"`
-	DatabaseName   string `envconfig:"DB_NAME" default:"postgres"`
-	DatabaseSSL    string `envconfig:"DB_SSL" default:"disable"`
+	Debug          bool   `envconfig:"DEBUG" default:"false" `       //validate:"oneof=true false"`
+	HTTPPort       string `envconfig:"HTTP_PORT" default:"80"`       //validate:"required,min=1,max=65535"`
+	DatabaseDriver string `envconfig:"DB_DRIVER" default:"postgres"` // validate:"required"`
+	DatabaseHost   string `envconfig:"DB_HOST" default:"localhost"`  // validate:"required"`
+	DatabasePort   string `envconfig:"DB_PORT" default:"5432"`       // validate:"required,min=1,max=65535"`
+	DatabaseUser   string `envconfig:"DB_USER" default:"postgres"`   /// validate:"required"`
+	DatabasePass   string `envconfig:"DB_PASS" default:"postgres"`   // validate:"required"`
+	DatabaseName   string `envconfig:"DB_NAME" default:"postgres"`   // validate:"required"`
+	DatabaseSSL    string `envconfig:"DB_SSL" default:"disable"`     // validate:"oneof=disable require prefer verify-ca verify-full"`
 }
 
 func (cfg *HTTPConfig) GetConnectionString() string {

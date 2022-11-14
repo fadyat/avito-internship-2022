@@ -16,6 +16,11 @@ func NewOuterServiceRepository(c *pgx.Conn) *OuterServiceRepository {
 }
 
 func (s *OuterServiceRepository) CreateService(os dto.OuterService) (uint64, error) {
+	id, err := s.createService(os)
+	return id, recastError(err)
+}
+
+func (s *OuterServiceRepository) createService(os dto.OuterService) (uint64, error) {
 	tx, err := s.c.Begin(context.Background())
 	if err != nil {
 		return 0, err
@@ -23,8 +28,8 @@ func (s *OuterServiceRepository) CreateService(os dto.OuterService) (uint64, err
 	defer func() { _ = tx.Rollback(context.Background()) }()
 
 	var id uint64
-	q := "INSERT INTO services (name, link) VALUES ($1, $2) RETURNING id"
-	err = tx.QueryRow(context.Background(), q, os.Name, os.Link).Scan(&id)
+	q := "INSERT INTO services (name, url) VALUES ($1, $2) RETURNING id"
+	err = tx.QueryRow(context.Background(), q, os.Name, os.URL).Scan(&id)
 	if err != nil {
 		return 0, err
 	}
@@ -37,6 +42,11 @@ func (s *OuterServiceRepository) CreateService(os dto.OuterService) (uint64, err
 }
 
 func (s *OuterServiceRepository) GetServiceByID(id uint64) (*models.OuterService, error) {
+	svcs, err := s.getServiceByID(id)
+	return svcs, recastError(err)
+}
+
+func (s *OuterServiceRepository) getServiceByID(id uint64) (*models.OuterService, error) {
 	tx, err := s.c.Begin(context.Background())
 	if err != nil {
 		return nil, err
@@ -45,7 +55,7 @@ func (s *OuterServiceRepository) GetServiceByID(id uint64) (*models.OuterService
 
 	var os models.OuterService
 	q := "SELECT * FROM services WHERE id = $1 LIMIT 1"
-	err = tx.QueryRow(context.Background(), q, id).Scan(&os.ID, &os.Name, &os.Link)
+	err = tx.QueryRow(context.Background(), q, id).Scan(&os.ID, &os.Name, &os.URL)
 	if err != nil {
 		return nil, err
 	}
@@ -58,6 +68,11 @@ func (s *OuterServiceRepository) GetServiceByID(id uint64) (*models.OuterService
 }
 
 func (s *OuterServiceRepository) GetAllServices() ([]*models.OuterService, error) {
+	svcs, err := s.getAllServices()
+	return svcs, recastError(err)
+}
+
+func (s *OuterServiceRepository) getAllServices() ([]*models.OuterService, error) {
 	tx, err := s.c.Begin(context.Background())
 	if err != nil {
 		return nil, err
@@ -73,7 +88,7 @@ func (s *OuterServiceRepository) GetAllServices() ([]*models.OuterService, error
 	var services []*models.OuterService
 	for rows.Next() {
 		var os models.OuterService
-		_ = rows.Scan(&os.ID, &os.Name, &os.Link)
+		_ = rows.Scan(&os.ID, &os.Name, &os.URL)
 		services = append(services, &os)
 	}
 

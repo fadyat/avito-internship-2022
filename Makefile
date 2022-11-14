@@ -11,7 +11,6 @@ swagger:
 
 local:
 	docker compose --project-directory ./build/balance up psql-local --detach
-	sleep 5
 	go run ./cmd/balance/main.go
 
 docker:

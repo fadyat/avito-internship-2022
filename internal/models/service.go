@@ -3,9 +3,16 @@ package models
 // OuterService godoc
 // @description: OuterService is an outer microservice, that uses this microservice.
 type OuterService struct {
-	ID   uint64 `json:"id"`
+
+	// @description: ID is given unique identifier of the service.
+	// @example:     1
+	ID uint64 `json:"id"`
+
+	// @description: Name is a name of the service.
+	// @example:     aboba-service
 	Name string `json:"name"`
 
-	// @description: Link is a link to the implementation of the service.
-	Link string `json:"link,omitempty"`
+	// @description: URL is a link to the implementation of the service.
+	// @example:     http://aboba-service.com
+	URL string `json:"url,omitempty"`
 }

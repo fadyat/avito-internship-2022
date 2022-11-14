@@ -2,45 +2,75 @@ basePath: /api/v1
 definitions:
   dto.OuterService:
     properties:
-      link:
-        type: string
       name:
+        description: |-
+          @description: Name is a name of the service.
+          @example:     aboba-service
+        maxLength: 255
+        minLength: 1
         type: string
+      url:
+        description: |-
+          @description: URL is a link to the implementation of the service.
+          @example:     http://aboba-service.com
+        maxLength: 255
+        type: string
+    required:
+    - name
     type: object
   models.OuterService:
     properties:
       id:
+        description: |-
+          @description: ID is given unique identifier of the service.
+          @example:     1
         type: integer
-      link:
-        description: '@description: Link is a link to the implementation of the service.'
-        type: string
       name:
+        description: |-
+          @description: Name is a name of the service.
+          @example:     aboba-service
+        type: string
+      url:
+        description: |-
+          @description: URL is a link to the implementation of the service.
+          @example:     http://aboba-service.com
         type: string
     type: object
   responses.ErrorResp:
     properties:
       description:
+        description: |-
+          @description: Description is a description of the error.
+          @example:     invalid request with id=1
         type: string
       message:
+        description: |-
+          @description: Message is a message of the error.
+          @example:     invalid request
         type: string
-      status_code:
-        type: integer
     type: object
   responses.HealthSuccess:
     properties:
       message:
+        description: |-
+          @description: Message is a success message.
+          @example:     OK
         type: string
-      status_code:
-        type: integer
     type: object
   responses.ServiceCreated:
     properties:
       id:
-        type: integer
+        description: |-
+          @description: ID is given unique identifier of the service.
+          @example:     1
+        type: string
     type: object
   responses.Services:
     properties:
       services:
+        description: |-
+          @description: Services is a list of services.
+          @example:     [{"id":1,"name":"aboba-service","url":"http://aboba-service.com"}]
         items:
           $ref: '#/definitions/models.OuterService'
         type: array
@@ -78,6 +108,10 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/responses.Services'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/responses.ErrorResp'
         "500":
           description: Internal Server Error
           schema:
@@ -128,6 +162,18 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/models.OuterService'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/responses.ErrorResp'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/responses.ErrorResp'
+        "422":
+          description: Unprocessable Entity
+          schema:
+            $ref: '#/definitions/responses.ErrorResp'
         "500":
           description: Internal Server Error
           schema:

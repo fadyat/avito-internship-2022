@@ -1,9 +1,13 @@
 package handlers
 
 import (
+	"database/sql"
+	"errors"
+	"fmt"
 	"github.com/fadyat/avito-internship-2022/internal/models/dto"
 	"github.com/fadyat/avito-internship-2022/internal/responses"
 	"github.com/fadyat/avito-internship-2022/internal/services"
+	"github.com/go-playground/validator/v10"
 	"github.com/gofiber/fiber/v2"
 	"go.uber.org/zap"
 	"strconv"
@@ -11,11 +15,16 @@ import (
 
 type OuterServiceHandler struct {
 	s services.IOuterServiceService
-	l zap.Logger
+	l *zap.Logger
+	v *validator.Validate
 }
 
-func NewOuterServiceHandler(s services.IOuterServiceService, l zap.Logger) *OuterServiceHandler {
-	return &OuterServiceHandler{s: s, l: l}
+func NewOuterServiceHandler(
+	s services.IOuterServiceService,
+	l *zap.Logger,
+	v *validator.Validate,
+) *OuterServiceHandler {
+	return &OuterServiceHandler{s: s, l: l, v: v}
 }
 
 // createService godoc
@@ -35,19 +44,23 @@ func (h *OuterServiceHandler) createService(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusBadRequest).JSON(&responses.ErrorResp{
 			Message:     "Bad request",
 			Description: err.Error(),
-			StatusCode:  fiber.StatusBadRequest,
+		})
+	}
+
+	if err := h.v.Struct(body); err != nil {
+		h.l.Debug("validation failed", zap.Error(err))
+		return c.Status(fiber.StatusUnprocessableEntity).JSON(&responses.ErrorResp{
+			Message:     "Unprocessable entity",
+			Description: err.Error(),
 		})
 	}
 
 	id, err := h.s.CreateService(body)
-
-	// todo: add error dependency
 	if err != nil {
 		h.l.Error("failed to create service", zap.Error(err))
 		return c.Status(fiber.StatusInternalServerError).JSON(&responses.ErrorResp{
 			Message:     "Internal server error",
 			Description: err.Error(),
-			StatusCode:  fiber.StatusInternalServerError,
 		})
 	}
 
@@ -62,17 +75,24 @@ func (h *OuterServiceHandler) createService(c *fiber.Ctx) error {
 // @summary     Get all services
 // @description Get all outer services info in the system
 // @response    200 {object} responses.Services
+// @response    404 {object} responses.ErrorResp
 // @response    500 {object} responses.ErrorResp
 func (h *OuterServiceHandler) getServices(c *fiber.Ctx) error {
 	svcs, err := h.s.GetAllServices()
 
-	// todo: add error dependency
+	if errors.Is(err, sql.ErrNoRows) {
+		h.l.Debug("services not found", zap.Error(err))
+		return c.Status(fiber.StatusNotFound).JSON(&responses.ErrorResp{
+			Message:     "Not found",
+			Description: "services not found",
+		})
+	}
+
 	if err != nil {
 		h.l.Error("failed to get all services", zap.Error(err))
 		return c.Status(fiber.StatusInternalServerError).JSON(&responses.ErrorResp{
 			Message:     "Internal server error",
 			Description: err.Error(),
-			StatusCode:  fiber.StatusInternalServerError,
 		})
 	}
 
@@ -90,17 +110,33 @@ func (h *OuterServiceHandler) getServices(c *fiber.Ctx) error {
 // @response    200 {object} models.OuterService
 // @response    400 {object} responses.ErrorResp
 // @response    404 {object} responses.ErrorResp
+// @response    422 {object} responses.ErrorResp
 // @response    500 {object} responses.ErrorResp
 func (h *OuterServiceHandler) getServiceByID(c *fiber.Ctx) error {
-	svc, err := h.s.GetServiceByID(c.Params("id"))
+	id, _ := strconv.ParseUint(c.Params("id"), 10, 64)
+	err := h.v.Var(id, "required,numeric,gte=1")
+	if err != nil {
+		h.l.Debug("validation failed", zap.Error(err))
+		return c.Status(fiber.StatusBadRequest).JSON(&responses.ErrorResp{
+			Message:     "Bad request",
+			Description: err.Error(),
+		})
+	}
 
-	// todo: add error dependency
+	svc, err := h.s.GetServiceByID(c.Params("id"))
+	if errors.Is(err, sql.ErrNoRows) {
+		h.l.Debug("service not found", zap.Error(err))
+		return c.Status(fiber.StatusNotFound).JSON(&responses.ErrorResp{
+			Message:     "Not found",
+			Description: fmt.Sprintf("service with id %s not found", c.Params("id")),
+		})
+	}
+
 	if err != nil {
 		h.l.Error("failed to get service by id", zap.Error(err))
 		return c.Status(fiber.StatusInternalServerError).JSON(&responses.ErrorResp{
 			Message:     "Internal server error",
 			Description: err.Error(),
-			StatusCode:  fiber.StatusInternalServerError,
 		})
 	}
 
