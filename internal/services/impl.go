@@ -15,7 +15,9 @@ type IHealthService interface {
 // todo: replace repository interface with service interface
 
 type IUserWalletService interface {
-	persistence.IUserWalletRepository
+	CreateUserWallet(w dto.UserWallet) (uint64, error)
+	GetAllWallets() ([]*models.UserWallet, error)
+	GetUserWalletByID(id string) (*models.UserWallet, error)
 }
 
 type IOuterServiceService interface {

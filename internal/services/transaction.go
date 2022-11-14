@@ -6,11 +6,11 @@ import (
 )
 
 type TransactionService struct {
-	repo persistence.ITransactionRepository
+	r persistence.ITransactionRepository
 }
 
-func NewTransactionService(repo persistence.ITransactionRepository) *TransactionService {
-	return &TransactionService{repo: repo}
+func NewTransactionService(r persistence.ITransactionRepository) *TransactionService {
+	return &TransactionService{r: r}
 }
 
 func (t TransactionService) CreateReplenishment(tr dto.Replenishment) (uint64, error) {

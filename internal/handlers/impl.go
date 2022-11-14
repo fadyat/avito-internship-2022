@@ -20,8 +20,8 @@ func InitRoutes(app *fiber.App, psql *pgx.Conn, log *zap.Logger, validate *valid
 	log.Debug("registered health check handler")
 
 	sr := postgres.NewOuterServiceRepository(psql)
-	ss := services.NewOuterServiceService(sr)
-	sh := NewOuterServiceHandler(ss, log, validate)
+	ss := services.NewOuterServiceService(sr, validate)
+	sh := NewOuterServiceHandler(ss, log)
 	v1.Post("/service", sh.createService)
 	v1.Get("/service", sh.getServices)
 	v1.Get("/service/:id<int>", sh.getServiceByID)

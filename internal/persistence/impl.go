@@ -6,12 +6,14 @@ import (
 )
 
 type IHealthRepository interface {
+
 	// Ping godoc
 	// @description: Ping checks if the database connection is working.
 	Ping() error
 }
 
 type IUserWalletRepository interface {
+
 	// CreateUserWallet godoc
 	// @description: CreateUserWallet creates a new wallet for a user, user_id is passed from outer service
 	CreateUserWallet(w dto.UserWallet) (uint64, error)
@@ -26,6 +28,7 @@ type IUserWalletRepository interface {
 }
 
 type ITransactionRepository interface {
+
 	// CreateReplenishment godoc
 	// @description: CreateReplenishment creates a new replenishment transaction
 	CreateReplenishment(tr dto.Replenishment) (uint64, error)
@@ -44,6 +47,7 @@ type ITransactionRepository interface {
 }
 
 type IOuterServiceRepository interface {
+
 	// CreateService godoc
 	// @description: CreateService creates a new service, that uses this microservice
 	CreateService(os dto.OuterService) (uint64, error)

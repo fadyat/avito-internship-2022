@@ -4,10 +4,10 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
+	"github.com/fadyat/avito-internship-2022/internal/models"
 	"github.com/fadyat/avito-internship-2022/internal/models/dto"
 	"github.com/fadyat/avito-internship-2022/internal/responses"
 	"github.com/fadyat/avito-internship-2022/internal/services"
-	"github.com/go-playground/validator/v10"
 	"github.com/gofiber/fiber/v2"
 	"go.uber.org/zap"
 	"strconv"
@@ -16,15 +16,13 @@ import (
 type OuterServiceHandler struct {
 	s services.IOuterServiceService
 	l *zap.Logger
-	v *validator.Validate
 }
 
 func NewOuterServiceHandler(
 	s services.IOuterServiceService,
 	l *zap.Logger,
-	v *validator.Validate,
 ) *OuterServiceHandler {
-	return &OuterServiceHandler{s: s, l: l, v: v}
+	return &OuterServiceHandler{s: s, l: l}
 }
 
 // createService godoc
@@ -47,7 +45,9 @@ func (h *OuterServiceHandler) createService(c *fiber.Ctx) error {
 		})
 	}
 
-	if err := h.v.Struct(body); err != nil {
+	id, err := h.s.CreateService(body)
+	verr := &responses.ValidationErrResp{}
+	if errors.As(err, &verr) {
 		h.l.Debug("validation failed", zap.Error(err))
 		return c.Status(fiber.StatusUnprocessableEntity).JSON(&responses.ErrorResp{
 			Message:     "Unprocessable entity",
@@ -55,7 +55,6 @@ func (h *OuterServiceHandler) createService(c *fiber.Ctx) error {
 		})
 	}
 
-	id, err := h.s.CreateService(body)
 	if err != nil {
 		h.l.Error("failed to create service", zap.Error(err))
 		return c.Status(fiber.StatusInternalServerError).JSON(&responses.ErrorResp{
@@ -79,7 +78,6 @@ func (h *OuterServiceHandler) createService(c *fiber.Ctx) error {
 // @response    500 {object} responses.ErrorResp
 func (h *OuterServiceHandler) getServices(c *fiber.Ctx) error {
 	svcs, err := h.s.GetAllServices()
-
 	if errors.Is(err, sql.ErrNoRows) {
 		h.l.Debug("services not found", zap.Error(err))
 		return c.Status(fiber.StatusNotFound).JSON(&responses.ErrorResp{
@@ -94,6 +92,10 @@ func (h *OuterServiceHandler) getServices(c *fiber.Ctx) error {
 			Message:     "Internal server error",
 			Description: err.Error(),
 		})
+	}
+
+	if svcs == nil {
+		svcs = make([]*models.OuterService, 0)
 	}
 
 	return c.Status(fiber.StatusOK).JSON(&responses.Services{
@@ -113,17 +115,16 @@ func (h *OuterServiceHandler) getServices(c *fiber.Ctx) error {
 // @response    422 {object} responses.ErrorResp
 // @response    500 {object} responses.ErrorResp
 func (h *OuterServiceHandler) getServiceByID(c *fiber.Ctx) error {
-	id, _ := strconv.ParseUint(c.Params("id"), 10, 64)
-	err := h.v.Var(id, "required,numeric,gte=1")
-	if err != nil {
+	svc, err := h.s.GetServiceByID(c.Params("id"))
+	verr := &responses.ValidationErrResp{}
+	if errors.As(err, &verr) {
 		h.l.Debug("validation failed", zap.Error(err))
-		return c.Status(fiber.StatusBadRequest).JSON(&responses.ErrorResp{
-			Message:     "Bad request",
+		return c.Status(fiber.StatusUnprocessableEntity).JSON(&responses.ErrorResp{
+			Message:     "Unprocessable entity",
 			Description: err.Error(),
 		})
 	}
 
-	svc, err := h.s.GetServiceByID(c.Params("id"))
 	if errors.Is(err, sql.ErrNoRows) {
 		h.l.Debug("service not found", zap.Error(err))
 		return c.Status(fiber.StatusNotFound).JSON(&responses.ErrorResp{

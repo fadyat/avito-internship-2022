@@ -1,17 +1,16 @@
 create table user_wallets
 (
-    id      int generated always as identity,
     user_id int not null,
     balance int not null default 0 check ( balance >= 0 ),
 
-    primary key (id)
+    primary key (user_id)
 );
 
 create table services
 (
     id   int generated always as identity,
     name varchar(255) not null,
-    url varchar(255) default null,
+    url  varchar(255) default null,
 
     primary key (id)
 );
