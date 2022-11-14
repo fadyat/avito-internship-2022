@@ -5,7 +5,8 @@ type TransactionType uint
 const (
 	Replenishment TransactionType = iota
 	Withdrawal
-	Transfer
+	Reservation
+	Release
 )
 
 // Transaction godoc
@@ -14,11 +15,8 @@ type Transaction struct {
 	// @description: ID is a unique identifier of the transaction.
 	ID uint `json:"id"`
 
-	// @description: SupplierWalletID is a unique identifier of the supplier wallet.
-	SupplierID uint `json:"supplier_id"`
-
-	// @description: RecipientWalletID is a unique identifier of the recipient wallet.
-	RecipientID uint `json:"recipient_id"`
+	// @description: UserID is a unique identifier of the user, that owns this transaction.
+	UserID uint `json:"user_id"`
 
 	// @description: ServiceID is a unique identifier of the service, that made this transaction.
 	ServiceID uint `json:"service_id"`

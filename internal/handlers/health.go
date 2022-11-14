@@ -7,10 +7,10 @@ import (
 )
 
 type HealthHandler struct {
-	repo persistence.HealthRepository
+	repo persistence.IHealthRepository
 }
 
-func NewHealthHandler(repo persistence.HealthRepository) *HealthHandler {
+func NewHealthHandler(repo persistence.IHealthRepository) *HealthHandler {
 	return &HealthHandler{
 		repo: repo,
 	}
