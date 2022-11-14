@@ -50,19 +50,7 @@ func main() {
 	}
 	logger.Debug("db initialized")
 
-	app := fiber.New(fiber.Config{
-		ReadTimeout:  5 * time.Second,
-		WriteTimeout: 5 * time.Second,
-		AppName:      "avito-internship-2022",
-	})
-
-	app.Use(cors.New())
-	app.Use(recover.New())
-	app.Get("/swagger/*", swagger.New(swagger.Config{
-		URL:         "/swagger/doc.json",
-		DeepLinking: true,
-	}))
-
+	app := initApp()
 	handlers.InitRoutes(app, psql)
 
 	err = app.Listen(":" + cfg.HTTPPort)
@@ -110,4 +98,21 @@ func initLogger() *zap.Logger {
 	)
 	logger := zap.New(loggerCore)
 	return logger
+}
+
+func initApp() *fiber.App {
+	app := fiber.New(fiber.Config{
+		ReadTimeout:  5 * time.Second,
+		WriteTimeout: 5 * time.Second,
+		AppName:      "avito-internship-2022",
+	})
+
+	app.Use(cors.New())
+	app.Use(recover.New())
+	app.Get("/swagger/*", swagger.New(swagger.Config{
+		URL:         "/swagger/doc.json",
+		DeepLinking: true,
+	}))
+
+	return app
 }
