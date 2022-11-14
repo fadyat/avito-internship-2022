@@ -1,5 +1,12 @@
 basePath: /api/v1
 definitions:
+  dto.OuterService:
+    properties:
+      link:
+        type: string
+      name:
+        type: string
+    type: object
   responses.HealthError:
     properties:
       description:
@@ -41,6 +48,39 @@ paths:
       summary: Healthcheck
       tags:
       - health
+  /api/v1/service:
+    get:
+      description: Get all outer services info in the system
+      responses: {}
+      summary: Get all services
+      tags:
+      - OuterService
+    post:
+      description: Create new outer service info in the system
+      parameters:
+      - description: Outer service info
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/dto.OuterService'
+      responses: {}
+      summary: New service
+      tags:
+      - OuterService
+  /api/v1/service/{id}:
+    get:
+      description: Get outer service info in the system by id
+      parameters:
+      - description: Service id
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses: {}
+      summary: Get service by id
+      tags:
+      - OuterService
 schemes:
 - http
 swagger: "2.0"

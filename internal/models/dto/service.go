@@ -1,6 +1,6 @@
 package dto
 
-type Service struct {
+type OuterService struct {
 	Name string `json:"name"`
 	Link string `json:"link"`
 }

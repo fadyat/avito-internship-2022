@@ -37,9 +37,68 @@
                     }
                 }
             }
+        },
+        "/api/v1/service": {
+            "get": {
+                "description": "Get all outer services info in the system",
+                "tags": [
+                    "OuterService"
+                ],
+                "summary": "Get all services",
+                "responses": {}
+            },
+            "post": {
+                "description": "Create new outer service info in the system",
+                "tags": [
+                    "OuterService"
+                ],
+                "summary": "New service",
+                "parameters": [
+                    {
+                        "description": "Outer service info",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.OuterService"
+                        }
+                    }
+                ],
+                "responses": {}
+            }
+        },
+        "/api/v1/service/{id}": {
+            "get": {
+                "description": "Get outer service info in the system by id",
+                "tags": [
+                    "OuterService"
+                ],
+                "summary": "Get service by id",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Service id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {}
+            }
         }
     },
     "definitions": {
+        "dto.OuterService": {
+            "type": "object",
+            "properties": {
+                "link": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
         "responses.HealthError": {
             "type": "object",
             "properties": {

@@ -6,7 +6,6 @@ import (
 	_ "github.com/fadyat/avito-internship-2022/docs"
 	"github.com/fadyat/avito-internship-2022/internal/config"
 	"github.com/fadyat/avito-internship-2022/internal/handlers"
-	"github.com/fadyat/avito-internship-2022/internal/persistence/postgres"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gofiber/fiber/v2/middleware/recover"
@@ -64,12 +63,7 @@ func main() {
 		DeepLinking: true,
 	}))
 
-	v1 := app.Group("/api/v1")
-
-	// fixme: make cleaner
-	healthRepo := postgres.NewHealthRepository(psql)
-	healthHandler := handlers.NewHealthHandler(healthRepo)
-	v1.Get("/health", healthHandler.HealthCheck)
+	handlers.InitRoutes(app, psql)
 
 	err = app.Listen(":" + cfg.HTTPPort)
 	defer func() {

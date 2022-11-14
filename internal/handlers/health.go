@@ -1,30 +1,30 @@
 package handlers
 
 import (
-	"github.com/fadyat/avito-internship-2022/internal/persistence"
 	"github.com/fadyat/avito-internship-2022/internal/responses"
+	"github.com/fadyat/avito-internship-2022/internal/services"
 	"github.com/gofiber/fiber/v2"
 )
 
 type HealthHandler struct {
-	repo persistence.IHealthRepository
+	s services.IHealthService
 }
 
-func NewHealthHandler(repo persistence.IHealthRepository) *HealthHandler {
+func NewHealthHandler(s services.IHealthService) *HealthHandler {
 	return &HealthHandler{
-		repo: repo,
+		s: s,
 	}
 }
 
-// HealthCheck godoc
-// @Router      /api/v1/health [get]
-// @Tags        health
-// @Summary     Healthcheck
-// @Description Healthcheck endpoint, that checks if the service is alive and database connection is working.
-// @Response    200 {object} responses.HealthSuccess
-// @Response    500 {object} responses.HealthError
-func (h *HealthHandler) HealthCheck(c *fiber.Ctx) error {
-	if err := h.repo.Ping(); err != nil {
+// healthCheck godoc
+// @router      /api/v1/health [get]
+// @tags        health
+// @summary     Healthcheck
+// @description Healthcheck endpoint, that checks if the service is alive and database connection is working.
+// @response    200 {object} responses.HealthSuccess
+// @response    500 {object} responses.HealthError
+func (h *HealthHandler) healthCheck(c *fiber.Ctx) error {
+	if err := h.s.Ping(); err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(&responses.HealthError{
 			Message:     "Database connection error",
 			Description: err.Error(),

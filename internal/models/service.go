@@ -1,11 +1,11 @@
 package models
 
-// Service godoc
-// @description: Service is an outer microservice, that uses this microservice.
-type Service struct {
-	ID   uint   `json:"id"`
+// OuterService godoc
+// @description: OuterService is an outer microservice, that uses this microservice.
+type OuterService struct {
+	ID   uint64 `json:"id"`
 	Name string `json:"name"`
 
 	// @description: Link is a link to the implementation of the service.
-	Link string `json:"link"`
+	Link string `json:"link,omitempty"`
 }

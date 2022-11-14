@@ -6,15 +6,13 @@ import (
 )
 
 type HealthRepository struct {
-	client *pgx.Conn
+	c *pgx.Conn
 }
 
-func NewHealthRepository(client *pgx.Conn) *HealthRepository {
-	return &HealthRepository{
-		client: client,
-	}
+func NewHealthRepository(c *pgx.Conn) *HealthRepository {
+	return &HealthRepository{c: c}
 }
 
 func (hr *HealthRepository) Ping() error {
-	return hr.client.Ping(context.Background())
+	return hr.c.Ping(context.Background())
 }
