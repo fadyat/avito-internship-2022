@@ -36,7 +36,7 @@ const docTemplate = `{
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/responses.HealthError"
+                            "$ref": "#/definitions/responses.ErrorResp"
                         }
                     }
                 }
@@ -49,7 +49,20 @@ const docTemplate = `{
                     "OuterService"
                 ],
                 "summary": "Get all services",
-                "responses": {}
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/responses.Services"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/responses.ErrorResp"
+                        }
+                    }
+                }
             },
             "post": {
                 "description": "Create new outer service info in the system",
@@ -59,7 +72,7 @@ const docTemplate = `{
                 "summary": "New service",
                 "parameters": [
                     {
-                        "description": "Outer service info",
+                        "description": "Outer service short info",
                         "name": "body",
                         "in": "body",
                         "required": true,
@@ -68,7 +81,32 @@ const docTemplate = `{
                         }
                     }
                 ],
-                "responses": {}
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/responses.ServiceCreated"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/responses.ErrorResp"
+                        }
+                    },
+                    "422": {
+                        "description": "Unprocessable Entity",
+                        "schema": {
+                            "$ref": "#/definitions/responses.ErrorResp"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/responses.ErrorResp"
+                        }
+                    }
+                }
             }
         },
         "/api/v1/service/{id}": {
@@ -81,13 +119,26 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "integer",
-                        "description": "Service id",
+                        "description": "service_id",
                         "name": "id",
                         "in": "path",
                         "required": true
                     }
                 ],
-                "responses": {}
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.OuterService"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/responses.ErrorResp"
+                        }
+                    }
+                }
             }
         }
     },
@@ -103,7 +154,22 @@ const docTemplate = `{
                 }
             }
         },
-        "responses.HealthError": {
+        "models.OuterService": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer"
+                },
+                "link": {
+                    "description": "@description: Link is a link to the implementation of the service.",
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
+        "responses.ErrorResp": {
             "type": "object",
             "properties": {
                 "description": {
@@ -125,6 +191,25 @@ const docTemplate = `{
                 },
                 "status_code": {
                     "type": "integer"
+                }
+            }
+        },
+        "responses.ServiceCreated": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer"
+                }
+            }
+        },
+        "responses.Services": {
+            "type": "object",
+            "properties": {
+                "services": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.OuterService"
+                    }
                 }
             }
         }

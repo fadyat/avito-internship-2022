@@ -7,7 +7,17 @@ definitions:
       name:
         type: string
     type: object
-  responses.HealthError:
+  models.OuterService:
+    properties:
+      id:
+        type: integer
+      link:
+        description: '@description: Link is a link to the implementation of the service.'
+        type: string
+      name:
+        type: string
+    type: object
+  responses.ErrorResp:
     properties:
       description:
         type: string
@@ -22,6 +32,18 @@ definitions:
         type: string
       status_code:
         type: integer
+    type: object
+  responses.ServiceCreated:
+    properties:
+      id:
+        type: integer
+    type: object
+  responses.Services:
+    properties:
+      services:
+        items:
+          $ref: '#/definitions/models.OuterService'
+        type: array
     type: object
 host: localhost:80
 info:
@@ -44,27 +66,51 @@ paths:
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/responses.HealthError'
+            $ref: '#/definitions/responses.ErrorResp'
       summary: Healthcheck
       tags:
       - health
   /api/v1/service:
     get:
       description: Get all outer services info in the system
-      responses: {}
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/responses.Services'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/responses.ErrorResp'
       summary: Get all services
       tags:
       - OuterService
     post:
       description: Create new outer service info in the system
       parameters:
-      - description: Outer service info
+      - description: Outer service short info
         in: body
         name: body
         required: true
         schema:
           $ref: '#/definitions/dto.OuterService'
-      responses: {}
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/responses.ServiceCreated'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/responses.ErrorResp'
+        "422":
+          description: Unprocessable Entity
+          schema:
+            $ref: '#/definitions/responses.ErrorResp'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/responses.ErrorResp'
       summary: New service
       tags:
       - OuterService
@@ -72,12 +118,20 @@ paths:
     get:
       description: Get outer service info in the system by id
       parameters:
-      - description: Service id
+      - description: service_id
         in: path
         name: id
         required: true
         type: integer
-      responses: {}
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.OuterService'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/responses.ErrorResp'
       summary: Get service by id
       tags:
       - OuterService

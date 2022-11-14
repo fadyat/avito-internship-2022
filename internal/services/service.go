@@ -5,6 +5,7 @@ import (
 	"github.com/fadyat/avito-internship-2022/internal/models/dto"
 	"github.com/fadyat/avito-internship-2022/internal/persistence"
 	"github.com/fadyat/avito-internship-2022/internal/validators"
+	"strconv"
 )
 
 type OuterServiceService struct {
@@ -23,13 +24,17 @@ func (s *OuterServiceService) CreateService(os dto.OuterService) (uint64, error)
 	return s.repo.CreateService(os)
 }
 
-func (s *OuterServiceService) GetServiceByID(id uint64) (*models.OuterService, error) {
-	// todo: add parsing id
-	if err := validators.ValidateServiceID(id); err != nil {
+func (s *OuterServiceService) GetServiceByID(id string) (*models.OuterService, error) {
+	uid, err := strconv.ParseUint(id, 10, 64)
+	if err != nil {
 		return nil, err
 	}
 
-	return s.repo.GetServiceByID(id)
+	if err := validators.ValidateServiceID(uid); err != nil {
+		return nil, err
+	}
+
+	return s.repo.GetServiceByID(uid)
 }
 
 func (s *OuterServiceService) GetAllServices() ([]*models.OuterService, error) {

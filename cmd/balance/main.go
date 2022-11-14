@@ -8,6 +8,7 @@ import (
 	"github.com/fadyat/avito-internship-2022/internal/handlers"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
+	"github.com/gofiber/fiber/v2/middleware/logger"
 	"github.com/gofiber/fiber/v2/middleware/recover"
 	"github.com/jackc/pgx/v5"
 	"github.com/joho/godotenv"
@@ -29,45 +30,45 @@ import (
 // @contact.name Artyom Fadeyev
 // @contact.url  https://github.com/fadyat
 func main() {
-	logger := initLogger()
+	logs := initLogger()
 	defer func() {
-		_ = logger.Sync()
+		_ = logs.Sync()
 	}()
 
-	cfg, err := initConfig(logger)
+	cfg, err := initConfig(logs)
 	if err != nil {
-		logger.Fatal("failed to init config", zap.Error(err))
+		logs.Fatal("failed to init config", zap.Error(err))
 	}
 
 	psql, err := initDB(cfg)
 	defer func() {
 		if err = psql.Close(context.Background()); err != nil {
-			logger.Fatal("failed to close db connection", zap.Error(err))
+			logs.Fatal("failed to close db connection", zap.Error(err))
 		}
 	}()
 	if err != nil {
-		logger.Fatal("failed to init db", zap.Error(err))
+		logs.Fatal("failed to init db", zap.Error(err))
 	}
-	logger.Debug("db initialized")
+	logs.Debug("db initialized")
 
 	app := initApp()
-	handlers.InitRoutes(app, psql)
+	handlers.InitRoutes(app, psql, logs)
 
 	err = app.Listen(":" + cfg.HTTPPort)
 	defer func() {
 		if err = app.Shutdown(); err != nil {
-			logger.Fatal("failed to shutdown server", zap.Error(err))
+			logs.Fatal("failed to shutdown server", zap.Error(err))
 		}
 	}()
 	if err != nil {
-		logger.Fatal("failed to start server", zap.Error(err))
+		logs.Fatal("failed to start server", zap.Error(err))
 	}
 }
 
-func initConfig(logger *zap.Logger) (*config.HTTPConfig, error) {
+func initConfig(logs *zap.Logger) (*config.HTTPConfig, error) {
 	var cfg config.HTTPConfig
 	if err := godotenv.Load(".env"); err != nil {
-		logger.Debug("failed to load .env file", zap.Error(err))
+		logs.Debug("failed to load .env file", zap.Error(err))
 	}
 
 	if err := envconfig.Process("", &cfg); err != nil {
@@ -96,8 +97,8 @@ func initLogger() *zap.Logger {
 		zapcore.Lock(os.Stdout),
 		logLevel,
 	)
-	logger := zap.New(loggerCore)
-	return logger
+	logs := zap.New(loggerCore)
+	return logs
 }
 
 func initApp() *fiber.App {
@@ -109,6 +110,11 @@ func initApp() *fiber.App {
 
 	app.Use(cors.New())
 	app.Use(recover.New())
+
+	app.Use(logger.New(logger.Config{
+		Format: "${time} ${status} - ${latency} ${method} ${path}\n",
+	}))
+
 	app.Get("/swagger/*", swagger.New(swagger.Config{
 		URL:         "/swagger/doc.json",
 		DeepLinking: true,
