@@ -7,25 +7,25 @@ import (
 	"github.com/jackc/pgx/v5"
 )
 
-type OuterServiceRepository struct {
+type OuterServiceRepo struct {
 	c *pgx.Conn
 }
 
-func NewOuterServiceRepository(c *pgx.Conn) *OuterServiceRepository {
-	return &OuterServiceRepository{c: c}
+func NewOuterServiceRepo(c *pgx.Conn) *OuterServiceRepo {
+	return &OuterServiceRepo{c: c}
 }
 
-func (s *OuterServiceRepository) CreateService(os dto.OuterService) (uint64, error) {
+func (s *OuterServiceRepo) CreateService(os dto.OuterService) (uint64, error) {
 	id, err := s.createService(os)
 	return id, recastError(err)
 }
 
-func (s *OuterServiceRepository) createService(os dto.OuterService) (uint64, error) {
+func (s *OuterServiceRepo) createService(os dto.OuterService) (uint64, error) {
 	tx, err := s.c.Begin(context.Background())
+	defer func() { _ = tx.Rollback(context.Background()) }()
 	if err != nil {
 		return 0, err
 	}
-	defer func() { _ = tx.Rollback(context.Background()) }()
 
 	var id uint64
 	q := "INSERT INTO services (name, url) VALUES ($1, $2) RETURNING id"
@@ -41,17 +41,17 @@ func (s *OuterServiceRepository) createService(os dto.OuterService) (uint64, err
 	return id, nil
 }
 
-func (s *OuterServiceRepository) GetServiceByID(id uint64) (*models.OuterService, error) {
+func (s *OuterServiceRepo) GetServiceByID(id uint64) (*models.OuterService, error) {
 	svcs, err := s.getServiceByID(id)
 	return svcs, recastError(err)
 }
 
-func (s *OuterServiceRepository) getServiceByID(id uint64) (*models.OuterService, error) {
+func (s *OuterServiceRepo) getServiceByID(id uint64) (*models.OuterService, error) {
 	tx, err := s.c.Begin(context.Background())
+	defer func() { _ = tx.Rollback(context.Background()) }()
 	if err != nil {
 		return nil, err
 	}
-	defer func() { _ = tx.Rollback(context.Background()) }()
 
 	var os models.OuterService
 	q := "SELECT * FROM services WHERE id = $1 LIMIT 1"
@@ -67,17 +67,17 @@ func (s *OuterServiceRepository) getServiceByID(id uint64) (*models.OuterService
 	return &os, nil
 }
 
-func (s *OuterServiceRepository) GetAllServices() ([]*models.OuterService, error) {
+func (s *OuterServiceRepo) GetAllServices() ([]*models.OuterService, error) {
 	svcs, err := s.getAllServices()
 	return svcs, recastError(err)
 }
 
-func (s *OuterServiceRepository) getAllServices() ([]*models.OuterService, error) {
+func (s *OuterServiceRepo) getAllServices() ([]*models.OuterService, error) {
 	tx, err := s.c.Begin(context.Background())
+	defer func() { _ = tx.Rollback(context.Background()) }()
 	if err != nil {
 		return nil, err
 	}
-	defer func() { _ = tx.Rollback(context.Background()) }()
 
 	q := "SELECT * FROM services"
 	rows, err := tx.Query(context.Background(), q)

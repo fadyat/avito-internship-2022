@@ -6,10 +6,10 @@ import (
 )
 
 type TransactionService struct {
-	r persistence.ITransactionRepository
+	r persistence.ITransactionRepo
 }
 
-func NewTransactionService(r persistence.ITransactionRepository) *TransactionService {
+func NewTransactionService(r persistence.ITransactionRepo) *TransactionService {
 	return &TransactionService{r: r}
 }
 

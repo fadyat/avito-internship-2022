@@ -74,7 +74,7 @@ func (h *OuterServiceHandler) createService(c *fiber.Ctx) error {
 // @summary     Get all services
 // @description Get all outer services info in the system
 // @response    200 {object} responses.Services
-// @response    404 {object} responses.ErrorResp
+// @response    404 {object} responses.ErrorResp // todo: remove??
 // @response    500 {object} responses.ErrorResp
 func (h *OuterServiceHandler) getServices(c *fiber.Ctx) error {
 	svcs, err := h.s.GetAllServices()

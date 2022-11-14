@@ -2,9 +2,9 @@ package responses
 
 import "github.com/fadyat/avito-internship-2022/internal/models"
 
-// UserWallerCreated godoc
-// @description: UserWallerCreated is a response for user wallet creation.
-type UserWallerCreated struct {
+// UserWalletCreated godoc
+// @description: UserWalletCreated is a response for user wallet creation.
+type UserWalletCreated struct {
 
 	// @description: ID is given unique identifier of the wallet.
 	// @example:     1

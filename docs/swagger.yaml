@@ -18,6 +18,17 @@ definitions:
     required:
     - name
     type: object
+  dto.UserWallet:
+    properties:
+      user_id:
+        description: |-
+          @description: UserID is a unique identifier of the user, that owns this wallet.
+          @example:     1
+        minimum: 1
+        type: integer
+    required:
+    - user_id
+    type: object
   models.OuterService:
     properties:
       id:
@@ -35,6 +46,19 @@ definitions:
           @description: URL is a link to the implementation of the service.
           @example:     http://aboba-service.com
         type: string
+    type: object
+  models.UserWallet:
+    properties:
+      balance:
+        description: |-
+          @description: Balance is a current balance of the wallet.
+          @example:     100
+        type: integer
+      user_id:
+        description: |-
+          @description: UserID is a unique identifier of the user, that owns this wallet.
+          @example:     1
+        type: integer
     type: object
   responses.ErrorResp:
     properties:
@@ -73,6 +97,24 @@ definitions:
           @example:     [{"id":1,"name":"aboba-service","url":"http://aboba-service.com"}]
         items:
           $ref: '#/definitions/models.OuterService'
+        type: array
+    type: object
+  responses.UserWalletCreated:
+    properties:
+      id:
+        description: |-
+          @description: ID is given unique identifier of the wallet.
+          @example:     1
+        type: integer
+    type: object
+  responses.UserWallets:
+    properties:
+      wallets:
+        description: |-
+          @description: UserWallets is a list of user wallets.
+          @example:     [{"user_id":1,"balance":100}]
+        items:
+          $ref: '#/definitions/models.UserWallet'
         type: array
     type: object
 host: localhost:80
@@ -181,6 +223,87 @@ paths:
       summary: Get service by id
       tags:
       - OuterService
+  /api/v1/wallet:
+    get:
+      description: Get wallets from the system
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/responses.UserWallets'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/responses.ErrorResp'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/responses.ErrorResp'
+      summary: Get wallets
+      tags:
+      - UserWallet
+    post:
+      description: Create new wallet in the system
+      parameters:
+      - description: Wallet info
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/dto.UserWallet'
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/responses.UserWalletCreated'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/responses.ErrorResp'
+        "422":
+          description: Unprocessable Entity
+          schema:
+            $ref: '#/definitions/responses.ErrorResp'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/responses.ErrorResp'
+      summary: New wallet
+      tags:
+      - UserWallet
+  /api/v1/wallet/{id}:
+    get:
+      description: Get user wallet from the system by id
+      parameters:
+      - description: Wallet id
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.UserWallet'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/responses.ErrorResp'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/responses.ErrorResp'
+        "422":
+          description: Unprocessable Entity
+          schema:
+            $ref: '#/definitions/responses.ErrorResp'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/responses.ErrorResp'
+      summary: Get wallet
+      tags:
+      - UserWallet
 schemes:
 - http
 swagger: "2.0"

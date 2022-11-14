@@ -5,14 +5,14 @@ import (
 	"github.com/fadyat/avito-internship-2022/internal/models/dto"
 )
 
-type IHealthRepository interface {
+type IHealthRepo interface {
 
 	// Ping godoc
 	// @description: Ping checks if the database connection is working.
 	Ping() error
 }
 
-type IUserWalletRepository interface {
+type IUserWalletRepo interface {
 
 	// CreateUserWallet godoc
 	// @description: CreateUserWallet creates a new wallet for a user, user_id is passed from outer service
@@ -27,7 +27,7 @@ type IUserWalletRepository interface {
 	GetAllWallets() ([]*models.UserWallet, error)
 }
 
-type ITransactionRepository interface {
+type ITransactionRepo interface {
 
 	// CreateReplenishment godoc
 	// @description: CreateReplenishment creates a new replenishment transaction
@@ -46,7 +46,7 @@ type ITransactionRepository interface {
 	CreateRelease(tr dto.Release) (uint64, error)
 }
 
-type IOuterServiceRepository interface {
+type IOuterServiceRepo interface {
 
 	// CreateService godoc
 	// @description: CreateService creates a new service, that uses this microservice

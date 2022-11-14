@@ -5,14 +5,14 @@ import (
 	"github.com/jackc/pgx/v5"
 )
 
-type HealthRepository struct {
+type HealthRepo struct {
 	c *pgx.Conn
 }
 
-func NewHealthRepository(c *pgx.Conn) *HealthRepository {
-	return &HealthRepository{c: c}
+func NewHealthRepo(c *pgx.Conn) *HealthRepo {
+	return &HealthRepo{c: c}
 }
 
-func (hr *HealthRepository) Ping() error {
+func (hr *HealthRepo) Ping() error {
 	return hr.c.Ping(context.Background())
 }

@@ -3,10 +3,10 @@ package services
 import "github.com/fadyat/avito-internship-2022/internal/persistence"
 
 type HealthService struct {
-	r persistence.IHealthRepository
+	r persistence.IHealthRepo
 }
 
-func NewHealthService(r persistence.IHealthRepository) *HealthService {
+func NewHealthService(r persistence.IHealthRepo) *HealthService {
 	return &HealthService{r: r}
 }
 

@@ -10,12 +10,12 @@ import (
 )
 
 type OuterServiceService struct {
-	r persistence.IOuterServiceRepository
+	r persistence.IOuterServiceRepo
 	v *validator.Validate
 }
 
 func NewOuterServiceService(
-	r persistence.IOuterServiceRepository,
+	r persistence.IOuterServiceRepo,
 	v *validator.Validate,
 ) *OuterServiceService {
 	return &OuterServiceService{r: r, v: v}

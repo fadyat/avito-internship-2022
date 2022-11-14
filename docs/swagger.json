@@ -160,6 +160,129 @@
                     }
                 }
             }
+        },
+        "/api/v1/wallet": {
+            "get": {
+                "description": "Get wallets from the system",
+                "tags": [
+                    "UserWallet"
+                ],
+                "summary": "Get wallets",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/responses.UserWallets"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/responses.ErrorResp"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/responses.ErrorResp"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "Create new wallet in the system",
+                "tags": [
+                    "UserWallet"
+                ],
+                "summary": "New wallet",
+                "parameters": [
+                    {
+                        "description": "Wallet info",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.UserWallet"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/responses.UserWalletCreated"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/responses.ErrorResp"
+                        }
+                    },
+                    "422": {
+                        "description": "Unprocessable Entity",
+                        "schema": {
+                            "$ref": "#/definitions/responses.ErrorResp"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/responses.ErrorResp"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/wallet/{id}": {
+            "get": {
+                "description": "Get user wallet from the system by id",
+                "tags": [
+                    "UserWallet"
+                ],
+                "summary": "Get wallet",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Wallet id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.UserWallet"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/responses.ErrorResp"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/responses.ErrorResp"
+                        }
+                    },
+                    "422": {
+                        "description": "Unprocessable Entity",
+                        "schema": {
+                            "$ref": "#/definitions/responses.ErrorResp"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/responses.ErrorResp"
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {
@@ -182,6 +305,19 @@
                 }
             }
         },
+        "dto.UserWallet": {
+            "type": "object",
+            "required": [
+                "user_id"
+            ],
+            "properties": {
+                "user_id": {
+                    "description": "@description: UserID is a unique identifier of the user, that owns this wallet.\n@example:     1",
+                    "type": "integer",
+                    "minimum": 1
+                }
+            }
+        },
         "models.OuterService": {
             "type": "object",
             "properties": {
@@ -196,6 +332,19 @@
                 "url": {
                     "description": "@description: URL is a link to the implementation of the service.\n@example:     http://aboba-service.com",
                     "type": "string"
+                }
+            }
+        },
+        "models.UserWallet": {
+            "type": "object",
+            "properties": {
+                "balance": {
+                    "description": "@description: Balance is a current balance of the wallet.\n@example:     100",
+                    "type": "integer"
+                },
+                "user_id": {
+                    "description": "@description: UserID is a unique identifier of the user, that owns this wallet.\n@example:     1",
+                    "type": "integer"
                 }
             }
         },
@@ -238,6 +387,27 @@
                     "type": "array",
                     "items": {
                         "$ref": "#/definitions/models.OuterService"
+                    }
+                }
+            }
+        },
+        "responses.UserWalletCreated": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "description": "@description: ID is given unique identifier of the wallet.\n@example:     1",
+                    "type": "integer"
+                }
+            }
+        },
+        "responses.UserWallets": {
+            "type": "object",
+            "properties": {
+                "wallets": {
+                    "description": "@description: UserWallets is a list of user wallets.\n@example:     [{\"user_id\":1,\"balance\":100}]",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.UserWallet"
                     }
                 }
             }

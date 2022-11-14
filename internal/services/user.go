@@ -10,12 +10,12 @@ import (
 )
 
 type UserWalletService struct {
-	r persistence.IUserWalletRepository
+	r persistence.IUserWalletRepo
 	v *validator.Validate
 }
 
 func NewUserWalletService(
-	r persistence.IUserWalletRepository,
+	r persistence.IUserWalletRepo,
 	v *validator.Validate,
 ) *UserWalletService {
 	return &UserWalletService{r: r, v: v}

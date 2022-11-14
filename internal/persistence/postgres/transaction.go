@@ -5,30 +5,30 @@ import (
 	"github.com/jackc/pgx/v5"
 )
 
-type TransactionRepository struct {
+type TransactionRepo struct {
 	c *pgx.Conn
 }
 
-func NewTransactionRepository(c *pgx.Conn) *TransactionRepository {
-	return &TransactionRepository{c: c}
+func NewTransactionRepo(c *pgx.Conn) *TransactionRepo {
+	return &TransactionRepo{c: c}
 }
 
-func (t *TransactionRepository) CreateReplenishment(tr dto.Replenishment) (uint64, error) {
+func (t *TransactionRepo) CreateReplenishment(tr dto.Replenishment) (uint64, error) {
 	// TODO implement me
 	panic("implement me")
 }
 
-func (t *TransactionRepository) CreateWithdrawal(tr dto.Withdrawal) (uint64, error) {
+func (t *TransactionRepo) CreateWithdrawal(tr dto.Withdrawal) (uint64, error) {
 	// TODO implement me
 	panic("implement me")
 }
 
-func (t *TransactionRepository) CreateReservation(tr dto.Reservation) (uint64, error) {
+func (t *TransactionRepo) CreateReservation(tr dto.Reservation) (uint64, error) {
 	// TODO implement me
 	panic("implement me")
 }
 
-func (t *TransactionRepository) CreateRelease(tr dto.Release) (uint64, error) {
+func (t *TransactionRepo) CreateRelease(tr dto.Release) (uint64, error) {
 	// TODO implement me
 	panic("implement me")
 }

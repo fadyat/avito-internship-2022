@@ -6,13 +6,9 @@ import (
 	"github.com/fadyat/avito-internship-2022/internal/persistence"
 )
 
-// todo: replace repository interface with service interface
-
 type IHealthService interface {
-	persistence.IHealthRepository
+	Ping() error
 }
-
-// todo: replace repository interface with service interface
 
 type IUserWalletService interface {
 	CreateUserWallet(w dto.UserWallet) (uint64, error)
@@ -29,5 +25,5 @@ type IOuterServiceService interface {
 // todo: replace repository interface with service interface
 
 type ITransactionService interface {
-	persistence.ITransactionRepository
+	persistence.ITransactionRepo
 }
