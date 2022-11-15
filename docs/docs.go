@@ -159,6 +159,86 @@ const docTemplate = `{
                 }
             }
         },
+        "/api/v1/transaction/replenishment": {
+            "post": {
+                "description": "Replenishment of the user's balance by a certain amount and creating a replenishment transaction",
+                "tags": [
+                    "Transaction"
+                ],
+                "summary": "Replenishment of the user's balance",
+                "parameters": [
+                    {
+                        "description": "Replenishment info",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.Replenishment"
+                        }
+                    }
+                ],
+                "responses": {
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/responses.ErrorResp"
+                        }
+                    },
+                    "422": {
+                        "description": "Unprocessable Entity",
+                        "schema": {
+                            "$ref": "#/definitions/responses.ErrorResp"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/responses.ErrorResp"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/transaction/withdrawal": {
+            "post": {
+                "description": "Withdrawal of the user's balance by a certain amount and creating a withdrawal transaction",
+                "tags": [
+                    "Transaction"
+                ],
+                "summary": "Withdrawal of the user's balance",
+                "parameters": [
+                    {
+                        "description": "Withdrawal info",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.Withdrawal"
+                        }
+                    }
+                ],
+                "responses": {
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/responses.ErrorResp"
+                        }
+                    },
+                    "422": {
+                        "description": "Unprocessable Entity",
+                        "schema": {
+                            "$ref": "#/definitions/responses.ErrorResp"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/responses.ErrorResp"
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/wallet": {
             "get": {
                 "description": "Get wallets from the system",
@@ -297,6 +377,26 @@ const docTemplate = `{
                 }
             }
         },
+        "dto.Replenishment": {
+            "type": "object",
+            "required": [
+                "amount",
+                "user_id"
+            ],
+            "properties": {
+                "amount": {
+                    "description": "@description: Amount is the amount of money, that was transferred.\n@example:     100",
+                    "type": "integer",
+                    "maximum": 1000000,
+                    "minimum": 1
+                },
+                "user_id": {
+                    "description": "@description: UserID is a unique identifier of the user, that owns this transaction.\n@example:     1",
+                    "type": "integer",
+                    "minimum": 1
+                }
+            }
+        },
         "dto.UserWallet": {
             "type": "object",
             "required": [
@@ -305,6 +405,26 @@ const docTemplate = `{
             "properties": {
                 "user_id": {
                     "description": "@description: UserID is a unique identifier of the user, that owns this wallet.\n@example:     1",
+                    "type": "integer",
+                    "minimum": 1
+                }
+            }
+        },
+        "dto.Withdrawal": {
+            "type": "object",
+            "required": [
+                "amount",
+                "user_id"
+            ],
+            "properties": {
+                "amount": {
+                    "description": "@description: Amount is the amount of money, that was transferred.\n@example:     100",
+                    "type": "integer",
+                    "maximum": 1000000,
+                    "minimum": 1
+                },
+                "user_id": {
+                    "description": "@description: UserID is a unique identifier of the user, that owns this transaction.\n@example:     1",
                     "type": "integer",
                     "minimum": 1
                 }

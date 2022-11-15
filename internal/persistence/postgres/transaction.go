@@ -70,6 +70,7 @@ func (t *TransactionRepo) createWithdrawal(tr dto.Withdrawal) (uint64, error) {
 		return 0, persistence.ErrNegativeAmount
 	}
 
+	// todo: add a check that the user has enough money
 	wq := `UPDATE user_wallets SET balance = balance - $1 WHERE user_id = $2`
 	_, err = tx.Exec(context.Background(), wq, tr.Amount, tr.UserID)
 	if err != nil {

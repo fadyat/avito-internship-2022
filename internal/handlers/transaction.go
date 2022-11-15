@@ -23,6 +23,16 @@ func NewTransactionHandler(
 	return &TransactionHandler{s: s, l: l}
 }
 
+// createTransaction godoc
+// @tags        Transaction
+// @router      /api/v1/transaction/replenishment [post]
+// @summary     Replenishment of the user's balance
+// @description Replenishment of the user's balance by a certain amount and creating a replenishment transaction
+// @param       body body     dto.Replenishment true "Replenishment info"
+// @response    400  {object} responses.ErrorResp
+// @response    422  {object} responses.ErrorResp
+// @response    500  {object} responses.ErrorResp
+// response    201  {object} // todo: implement
 func (h *TransactionHandler) createReplenishment(c *fiber.Ctx) error {
 	var body dto.Replenishment
 	if err := c.BodyParser(&body); err != nil {
@@ -64,6 +74,16 @@ func (h *TransactionHandler) createReplenishment(c *fiber.Ctx) error {
 	return c.Status(fiber.StatusCreated).JSON(`{"message": "` + msg + `"}`)
 }
 
+// createWithdrawal godoc
+// @tags        Transaction
+// @router      /api/v1/transaction/withdrawal [post]
+// @summary     Withdrawal of the user's balance
+// @description Withdrawal of the user's balance by a certain amount and creating a withdrawal transaction
+// @param       body body     dto.Withdrawal true "Withdrawal info"
+// @response    400  {object} responses.ErrorResp
+// @response    422  {object} responses.ErrorResp
+// @response    500  {object} responses.ErrorResp
+// response    201  {object} // todo: implement
 func (h *TransactionHandler) createWithdrawal(c *fiber.Ctx) error {
 	// todo: implement
 	panic("implement me")

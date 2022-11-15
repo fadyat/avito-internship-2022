@@ -18,6 +18,25 @@ definitions:
     required:
     - name
     type: object
+  dto.Replenishment:
+    properties:
+      amount:
+        description: |-
+          @description: Amount is the amount of money, that was transferred.
+          @example:     100
+        maximum: 1000000
+        minimum: 1
+        type: integer
+      user_id:
+        description: |-
+          @description: UserID is a unique identifier of the user, that owns this transaction.
+          @example:     1
+        minimum: 1
+        type: integer
+    required:
+    - amount
+    - user_id
+    type: object
   dto.UserWallet:
     properties:
       user_id:
@@ -27,6 +46,25 @@ definitions:
         minimum: 1
         type: integer
     required:
+    - user_id
+    type: object
+  dto.Withdrawal:
+    properties:
+      amount:
+        description: |-
+          @description: Amount is the amount of money, that was transferred.
+          @example:     100
+        maximum: 1000000
+        minimum: 1
+        type: integer
+      user_id:
+        description: |-
+          @description: UserID is a unique identifier of the user, that owns this transaction.
+          @example:     1
+        minimum: 1
+        type: integer
+    required:
+    - amount
     - user_id
     type: object
   models.OuterService:
@@ -219,6 +257,60 @@ paths:
       summary: Get service by id
       tags:
       - OuterService
+  /api/v1/transaction/replenishment:
+    post:
+      description: Replenishment of the user's balance by a certain amount and creating
+        a replenishment transaction
+      parameters:
+      - description: Replenishment info
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/dto.Replenishment'
+      responses:
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/responses.ErrorResp'
+        "422":
+          description: Unprocessable Entity
+          schema:
+            $ref: '#/definitions/responses.ErrorResp'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/responses.ErrorResp'
+      summary: Replenishment of the user's balance
+      tags:
+      - Transaction
+  /api/v1/transaction/withdrawal:
+    post:
+      description: Withdrawal of the user's balance by a certain amount and creating
+        a withdrawal transaction
+      parameters:
+      - description: Withdrawal info
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/dto.Withdrawal'
+      responses:
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/responses.ErrorResp'
+        "422":
+          description: Unprocessable Entity
+          schema:
+            $ref: '#/definitions/responses.ErrorResp'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/responses.ErrorResp'
+      summary: Withdrawal of the user's balance
+      tags:
+      - Transaction
   /api/v1/wallet:
     get:
       description: Get wallets from the system
