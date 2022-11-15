@@ -3,20 +3,20 @@ package handlers
 import (
 	"github.com/fadyat/avito-internship-2022/internal/responses"
 	"github.com/fadyat/avito-internship-2022/internal/services"
-	"github.com/go-playground/validator/v10"
 	"github.com/gofiber/fiber/v2"
+	"go.uber.org/zap"
 )
 
 type HealthHandler struct {
 	s services.IHealthService
-	v *validator.Validate
+	l *zap.Logger
 }
 
 func NewHealthHandler(
 	s services.IHealthService,
-	v *validator.Validate,
+	l *zap.Logger,
 ) *HealthHandler {
-	return &HealthHandler{s: s, v: v}
+	return &HealthHandler{s: s, l: l}
 }
 
 // healthCheck godoc
@@ -28,6 +28,7 @@ func NewHealthHandler(
 // @response    500 {object} responses.ErrorResp
 func (h *HealthHandler) healthCheck(c *fiber.Ctx) error {
 	if err := h.s.Ping(); err != nil {
+		h.l.Debug("failed to ping database", zap.Error(err))
 		return c.Status(fiber.StatusInternalServerError).JSON(&responses.ErrorResp{
 			Message:     "Database connection error",
 			Description: err.Error(),

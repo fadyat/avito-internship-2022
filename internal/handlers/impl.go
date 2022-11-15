@@ -15,7 +15,7 @@ func InitRoutes(app *fiber.App, psql *pgx.Conn, log *zap.Logger, validate *valid
 
 	hr := postgres.NewHealthRepo(psql)
 	hs := services.NewHealthService(hr)
-	hh := NewHealthHandler(hs, validate)
+	hh := NewHealthHandler(hs, log)
 	v1.Get("/health", hh.healthCheck)
 	log.Debug("registered health check handler")
 
