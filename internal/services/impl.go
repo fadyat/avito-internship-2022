@@ -3,7 +3,6 @@ package services
 import (
 	"github.com/fadyat/avito-internship-2022/internal/models"
 	"github.com/fadyat/avito-internship-2022/internal/models/dto"
-	"github.com/fadyat/avito-internship-2022/internal/persistence"
 )
 
 type IHealthService interface {
@@ -22,8 +21,11 @@ type IOuterServiceService interface {
 	GetServiceByID(id string) (*models.OuterService, error)
 }
 
-// todo: replace repository interface with service interface
-
 type ITransactionService interface {
-	persistence.ITransactionRepo
+	CreateReplenishment(tr dto.Replenishment) (uint64, error)
+	CreateWithdrawal(tr dto.Withdrawal) (uint64, error)
+	CreateReservation(tr dto.Reservation) (uint64, error)
+	CreateRelease(tr dto.Release) (uint64, error)
+	GetAllTransactions() ([]*models.Transaction, error)
+	GetTransactionByID(id string) (*models.Transaction, error)
 }

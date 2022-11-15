@@ -34,4 +34,15 @@ func InitRoutes(app *fiber.App, psql *pgx.Conn, log *zap.Logger, validate *valid
 	v1.Get("/wallet", wh.getWallets)
 	v1.Get("/wallet/:id<int>", wh.getWalletByID)
 	log.Debug("registered user wallet handlers")
+
+	tr := postgres.NewTransactionRepo(psql)
+	ts := services.NewTransactionService(tr, validate)
+	th := NewTransactionHandler(ts, log)
+	v1.Get("/transaction", th.getTransactions)
+	v1.Get("/transaction/:id<int>", th.getTransactionByID)
+	v1.Post("/transaction/replenishment", th.createReplenishment)
+	v1.Post("/transaction/withdrawal", th.createWithdrawal)
+	v1.Post("/transaction/reservation", th.createReservation)
+	v1.Post("/transaction/release", th.createRelease)
+	log.Debug("registered transaction handlers")
 }

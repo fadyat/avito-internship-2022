@@ -44,7 +44,7 @@ func (h *UserWalletHandler) createWallet(c *fiber.Ctx) error {
 	}
 
 	id, err := h.s.CreateUserWallet(body)
-	verr := &responses.ValidationErrResp{}
+	var verr *responses.ValidationErrResp
 	if errors.As(err, &verr) {
 		h.l.Debug("validation failed", zap.Error(err))
 		return c.Status(fiber.StatusUnprocessableEntity).JSON(&responses.ErrorResp{
@@ -80,17 +80,9 @@ func (h *UserWalletHandler) createWallet(c *fiber.Ctx) error {
 // @summary     Get wallets
 // @description Get wallets from the system
 // @response    200 {object} responses.UserWallets
-// @response    404 {object} responses.ErrorResp // todo: remove??
 // @response    500 {object} responses.ErrorResp
 func (h *UserWalletHandler) getWallets(c *fiber.Ctx) error {
 	ws, err := h.s.GetAllUserWallets()
-	if errors.Is(err, persistence.ErrNotFound) {
-		h.l.Debug("no wallets found", zap.Error(err))
-		return c.Status(fiber.StatusNotFound).JSON(&responses.ErrorResp{
-			Message:     "Not found",
-			Description: err.Error(),
-		})
-	}
 
 	if err != nil {
 		h.l.Error("failed to get wallets", zap.Error(err))
@@ -122,7 +114,7 @@ func (h *UserWalletHandler) getWallets(c *fiber.Ctx) error {
 // @response    500 {object} responses.ErrorResp
 func (h *UserWalletHandler) getWalletByID(c *fiber.Ctx) error {
 	w, err := h.s.GetUserWalletByID(c.Params("id"))
-	verr := &responses.ValidationErrResp{}
+	var verr *responses.ValidationErrResp
 	if errors.As(err, &verr) {
 		h.l.Debug("validation failed", zap.Error(err))
 		return c.Status(fiber.StatusUnprocessableEntity).JSON(&responses.ErrorResp{

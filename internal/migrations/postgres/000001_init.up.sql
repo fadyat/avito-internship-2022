@@ -15,27 +15,31 @@ create table services
     primary key (id)
 );
 
+create type transaction_type as enum ('replenishment', 'withdrawal');
+
 create table transactions
 (
-    id         int generated always as identity,
-    user_id    int not null,
-    service_id int,
-    order_id   int not null,
-    amount     int not null,
+    id      int generated always as identity,
+    user_id int              not null,
+    amount  int              not null,
+    type    transaction_type not null,
 
     primary key (id),
-    foreign key (service_id) references services (id)
+    foreign key (user_id) references user_wallets (user_id)
 );
 
+create type reservation_status as enum ('pending', 'approved', 'rejected');
 
 create table reservations
 (
     id         int generated always as identity,
-    user_id    int not null,
+    user_id    int                not null,
     service_id int,
-    order_id   int not null,
-    amount     int not null,
+    order_id   int                not null,
+    amount     int                not null,
+    status     reservation_status not null,
 
     primary key (id),
-    foreign key (service_id) references services (id)
+    foreign key (service_id) references services (id),
+    foreign key (user_id) references user_wallets (user_id)
 );

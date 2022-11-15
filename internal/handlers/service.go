@@ -45,7 +45,7 @@ func (h *OuterServiceHandler) createService(c *fiber.Ctx) error {
 	}
 
 	id, err := h.s.CreateService(body)
-	verr := &responses.ValidationErrResp{}
+	var verr *responses.ValidationErrResp
 	if errors.As(err, &verr) {
 		h.l.Debug("validation failed", zap.Error(err))
 		return c.Status(fiber.StatusUnprocessableEntity).JSON(&responses.ErrorResp{
@@ -73,17 +73,9 @@ func (h *OuterServiceHandler) createService(c *fiber.Ctx) error {
 // @summary     Get all services
 // @description Get all outer services info in the system
 // @response    200 {object} responses.Services
-// @response    404 {object} responses.ErrorResp // todo: remove??
 // @response    500 {object} responses.ErrorResp
 func (h *OuterServiceHandler) getServices(c *fiber.Ctx) error {
 	svcs, err := h.s.GetAllServices()
-	if errors.Is(err, persistence.ErrNotFound) {
-		h.l.Debug("services not found", zap.Error(err))
-		return c.Status(fiber.StatusNotFound).JSON(&responses.ErrorResp{
-			Message:     "Not found",
-			Description: "services not found",
-		})
-	}
 
 	if err != nil {
 		h.l.Error("failed to get all services", zap.Error(err))
@@ -115,7 +107,7 @@ func (h *OuterServiceHandler) getServices(c *fiber.Ctx) error {
 // @response    500 {object} responses.ErrorResp
 func (h *OuterServiceHandler) getServiceByID(c *fiber.Ctx) error {
 	svc, err := h.s.GetServiceByID(c.Params("id"))
-	verr := &responses.ValidationErrResp{}
+	var verr *responses.ValidationErrResp
 	if errors.As(err, &verr) {
 		h.l.Debug("validation failed", zap.Error(err))
 		return c.Status(fiber.StatusUnprocessableEntity).JSON(&responses.ErrorResp{

@@ -10,6 +10,7 @@ var (
 	ErrNotFound            = errors.New("not found")
 	ErrUniqueViolation     = errors.New("unique violation")
 	ErrForeignKeyViolation = errors.New("foreign key violation")
+	ErrNegativeAmount      = errors.New("negative amount")
 )
 
 type IHealthRepo interface {

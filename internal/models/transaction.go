@@ -1,22 +1,64 @@
 package models
 
-type TransactionType uint64
+type TransactionType string
+
+const (
+	Replenishment TransactionType = "replenishment"
+	Withdrawal    TransactionType = "withdrawal"
+)
 
 // Transaction godoc
 // @description: Transaction is an operation between two wallets.
 type Transaction struct {
+
 	// @description: ID is a unique identifier of the transaction.
+	// @example:     1
 	ID uint64 `json:"id"`
 
 	// @description: UserID is a unique identifier of the user, that owns this transaction.
+	// @example:     1
 	UserID uint64 `json:"user_id"`
 
-	// @description: ServiceID is a unique identifier of the service, that made this transaction.
+	// @description: Amount is the amount of money, that was transferred.
+	// @example:     100
+	Amount uint64 `json:"amount"`
+
+	// @description: Type is the type of the transaction.
+	// @example:     Replenishment
+	Type TransactionType `json:"type"`
+}
+
+type ReservationStatus string
+
+const (
+	Pending  ReservationStatus = "pending"
+	Approved ReservationStatus = "approved"
+	Rejected ReservationStatus = "rejected"
+)
+
+type Reservation struct {
+
+	// @description: ID is a unique identifier of the reservation.
+	// @example:     1
+	ID uint64 `json:"id"`
+
+	// @description: UserID is a unique identifier of the user, that owns this reservation.
+	// @example:     1
+	UserID uint64 `json:"user_id"`
+
+	// @description: ServiceID is a unique identifier of the service, that made this reservation.
+	// @example:     1
 	ServiceID uint64 `json:"service_id"`
 
 	// @description: OrderID is a unique identifier of the order, that belongs to the service.
+	// @example:     1
 	OrderID uint64 `json:"order_id"`
 
 	// @description: Amount is the amount of money, that was transferred.
+	// @example:     100
 	Amount uint64 `json:"amount"`
+
+	// @description: Status is the status of the reservation.
+	// @example:     Pending
+	Status ReservationStatus `json:"status"`
 }
