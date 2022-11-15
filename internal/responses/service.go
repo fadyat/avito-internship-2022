@@ -16,6 +16,6 @@ type ServiceCreated struct {
 type Services struct {
 
 	// @description: Services is a list of services.
-	// @example:     [{"id":1,"name":"aboba-service","url":"http://aboba-service.com"}]
+	// @example:     [{"id":1,"name":"aboba-service","url":"https://aboba-service.com"}]
 	Services []*models.OuterService `json:"services"`
 }

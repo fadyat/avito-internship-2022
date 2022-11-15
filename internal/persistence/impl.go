@@ -40,11 +40,11 @@ type ITransactionRepo interface {
 
 	// CreateReplenishment godoc
 	// @description: CreateReplenishment creates a new replenishment transaction
-	CreateReplenishment(tr dto.Replenishment) (uint64, error)
+	CreateReplenishment(tr dto.Transaction) (uint64, error)
 
 	// CreateWithdrawal godoc
 	// @description: CreateWithdrawal creates a new withdrawal transaction
-	CreateWithdrawal(tr dto.Withdrawal) (uint64, error)
+	CreateWithdrawal(tr dto.Transaction) (uint64, error)
 
 	// CreateReservation godoc
 	// @description: CreateReservation creates a new reservation transaction
@@ -52,7 +52,11 @@ type ITransactionRepo interface {
 
 	// CreateRelease godoc
 	// @description: CreateRelease creates a new release transaction
-	CreateRelease(tr dto.Release) (uint64, error)
+	CreateRelease(tr dto.Reservation) (uint64, error)
+
+	// CancelReservation godoc
+	// @description: CancelReservation cancels a reservation transaction
+	CancelReservation(tr dto.Reservation) (uint64, error)
 
 	// GetUserTransactions godoc
 	// @description: GetUserTransactions returns a paginated result of all transactions of a user

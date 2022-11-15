@@ -11,30 +11,11 @@ definitions:
       url:
         description: |-
           @description: URL is a link to the implementation of the service.
-          @example:     http://aboba-service.com
+          @example:     https://aboba-service.com
         maxLength: 255
         type: string
     required:
     - name
-    type: object
-  dto.Replenishment:
-    properties:
-      amount:
-        description: |-
-          @description: Amount is the amount of money, that was transferred.
-          @example:     100
-        maximum: 1000000
-        minimum: 1
-        type: integer
-      user_id:
-        description: |-
-          @description: UserID is a unique identifier of the user, that owns this transaction.
-          @example:     1
-        minimum: 1
-        type: integer
-    required:
-    - amount
-    - user_id
     type: object
   dto.Reservation:
     properties:
@@ -69,18 +50,7 @@ definitions:
     - service_id
     - user_id
     type: object
-  dto.UserWallet:
-    properties:
-      user_id:
-        description: |-
-          @description: UserID is a unique identifier of the user, that owns this wallet.
-          @example:     1
-        minimum: 1
-        type: integer
-    required:
-    - user_id
-    type: object
-  dto.Withdrawal:
+  dto.Transaction:
     properties:
       amount:
         description: |-
@@ -99,6 +69,17 @@ definitions:
     - amount
     - user_id
     type: object
+  dto.UserWallet:
+    properties:
+      user_id:
+        description: |-
+          @description: UserID is a unique identifier of the user, that owns this wallet.
+          @example:     1
+        minimum: 1
+        type: integer
+    required:
+    - user_id
+    type: object
   models.OuterService:
     properties:
       id:
@@ -114,7 +95,7 @@ definitions:
       url:
         description: |-
           @description: URL is a link to the implementation of the service.
-          @example:     http://aboba-service.com
+          @example:     https://aboba-service.com
         type: string
     type: object
   models.Transaction:
@@ -225,7 +206,7 @@ definitions:
       services:
         description: |-
           @description: Services is a list of services.
-          @example:     [{"id":1,"name":"aboba-service","url":"http://aboba-service.com"}]
+          @example:     [{"id":1,"name":"aboba-service","url":"https://aboba-service.com"}]
         items:
           $ref: '#/definitions/models.OuterService'
         type: array
@@ -378,15 +359,15 @@ paths:
       - OuterService
   /api/v1/transaction/replenishment:
     post:
-      description: Replenishment of the user's balance by a certain amount and creating
+      description: Transaction of the user's balance by a certain amount and creating
         a replenishment transaction
       parameters:
-      - description: Replenishment info
+      - description: Transaction info
         in: body
         name: body
         required: true
         schema:
-          $ref: '#/definitions/dto.Replenishment'
+          $ref: '#/definitions/dto.Transaction'
       responses:
         "201":
           description: Created
@@ -408,7 +389,7 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/responses.ErrorResp'
-      summary: Replenishment of the user's balance
+      summary: Transaction of the user's balance
       tags:
       - Transaction
   /api/v1/transaction/reservation:
@@ -496,15 +477,15 @@ paths:
       - Transaction
   /api/v1/transaction/withdrawal:
     post:
-      description: Withdrawal of the user's balance by a certain amount and creating
+      description: Transaction of the user's balance by a certain amount and creating
         a withdrawal transaction
       parameters:
-      - description: Withdrawal info
+      - description: Transaction info
         in: body
         name: body
         required: true
         schema:
-          $ref: '#/definitions/dto.Withdrawal'
+          $ref: '#/definitions/dto.Transaction'
       responses:
         "201":
           description: Created
@@ -526,7 +507,7 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/responses.ErrorResp'
-      summary: Withdrawal of the user's balance
+      summary: Transaction of the user's balance
       tags:
       - Transaction
   /api/v1/wallet:

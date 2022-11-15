@@ -22,10 +22,10 @@ type IOuterServiceService interface {
 }
 
 type ITransactionService interface {
-	CreateReplenishment(tr dto.Replenishment) (uint64, error)
-	CreateWithdrawal(tr dto.Withdrawal) (uint64, error)
+	CreateReplenishment(tr dto.Transaction) (uint64, error)
+	CreateWithdrawal(tr dto.Transaction) (uint64, error)
 	CreateReservation(tr dto.Reservation) (uint64, error)
-	CreateRelease(tr dto.Release) (uint64, error)
+	CreateRelease(tr dto.Reservation) (uint64, error)
 	GetUserTransactions(userID string, page, perPage uint64, orderBy []string) ([]*models.Transaction, error)
 	GetUserTransactionsCount(userID string) (uint64, error)
 }

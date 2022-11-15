@@ -18,12 +18,12 @@ func NewTransactionRepo(c *pgx.Conn) *TransactionRepo {
 	return &TransactionRepo{c: c}
 }
 
-func (t *TransactionRepo) CreateReplenishment(tr dto.Replenishment) (uint64, error) {
+func (t *TransactionRepo) CreateReplenishment(tr dto.Transaction) (uint64, error) {
 	id, err := t.createReplenishment(tr)
 	return id, recastError(err)
 }
 
-func (t *TransactionRepo) createReplenishment(tr dto.Replenishment) (uint64, error) {
+func (t *TransactionRepo) createReplenishment(tr dto.Transaction) (uint64, error) {
 	tx, err := t.c.Begin(context.Background())
 	defer func() { _ = tx.Rollback(context.Background()) }()
 	if err != nil {
@@ -55,12 +55,12 @@ func (t *TransactionRepo) createReplenishment(tr dto.Replenishment) (uint64, err
 	return id, nil
 }
 
-func (t *TransactionRepo) CreateWithdrawal(tr dto.Withdrawal) (uint64, error) {
+func (t *TransactionRepo) CreateWithdrawal(tr dto.Transaction) (uint64, error) {
 	id, err := t.createWithdrawal(tr)
 	return id, recastError(err)
 }
 
-func (t *TransactionRepo) createWithdrawal(tr dto.Withdrawal) (uint64, error) {
+func (t *TransactionRepo) createWithdrawal(tr dto.Transaction) (uint64, error) {
 	tx, err := t.c.Begin(context.Background())
 	defer func() { _ = tx.Rollback(context.Background()) }()
 	if err != nil {
@@ -125,12 +125,22 @@ func (t *TransactionRepo) createReservation(tr dto.Reservation) (uint64, error) 
 	return id, nil
 }
 
-func (t *TransactionRepo) CreateRelease(tr dto.Release) (uint64, error) {
+func (t *TransactionRepo) CreateRelease(tr dto.Reservation) (uint64, error) {
 	id, err := t.createRelease(tr)
 	return id, recastError(err)
 }
 
-func (t *TransactionRepo) createRelease(tr dto.Release) (uint64, error) {
+func (t *TransactionRepo) createRelease(tr dto.Reservation) (uint64, error) {
+	// TODO implement me
+	panic("implement me")
+}
+
+func (t *TransactionRepo) CancelReservation(tr dto.Reservation) (uint64, error) {
+	id, err := t.cancelReservation(tr)
+	return id, recastError(err)
+}
+
+func (t *TransactionRepo) cancelReservation(tr dto.Reservation) (uint64, error) {
 	// TODO implement me
 	panic("implement me")
 }
@@ -170,6 +180,7 @@ func (t *TransactionRepo) getUserTransactions(userID, page, perPage uint64, orde
 
 	return ts, nil
 }
+
 func (t *TransactionRepo) GetUserTransactionsCount(userID uint64) (uint64, error) {
 	count, err := t.getUserTransactionsCount(userID)
 	return count, recastError(err)

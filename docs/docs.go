@@ -162,19 +162,19 @@ const docTemplate = `{
         },
         "/api/v1/transaction/replenishment": {
             "post": {
-                "description": "Replenishment of the user's balance by a certain amount and creating a replenishment transaction",
+                "description": "Transaction of the user's balance by a certain amount and creating a replenishment transaction",
                 "tags": [
                     "Transaction"
                 ],
-                "summary": "Replenishment of the user's balance",
+                "summary": "Transaction of the user's balance",
                 "parameters": [
                     {
-                        "description": "Replenishment info",
+                        "description": "Transaction info",
                         "name": "body",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/dto.Replenishment"
+                            "$ref": "#/definitions/dto.Transaction"
                         }
                     }
                 ],
@@ -336,19 +336,19 @@ const docTemplate = `{
         },
         "/api/v1/transaction/withdrawal": {
             "post": {
-                "description": "Withdrawal of the user's balance by a certain amount and creating a withdrawal transaction",
+                "description": "Transaction of the user's balance by a certain amount and creating a withdrawal transaction",
                 "tags": [
                     "Transaction"
                 ],
-                "summary": "Withdrawal of the user's balance",
+                "summary": "Transaction of the user's balance",
                 "parameters": [
                     {
-                        "description": "Withdrawal info",
+                        "description": "Transaction info",
                         "name": "body",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/dto.Withdrawal"
+                            "$ref": "#/definitions/dto.Transaction"
                         }
                     }
                 ],
@@ -525,29 +525,9 @@ const docTemplate = `{
                     "minLength": 1
                 },
                 "url": {
-                    "description": "@description: URL is a link to the implementation of the service.\n@example:     http://aboba-service.com",
+                    "description": "@description: URL is a link to the implementation of the service.\n@example:     https://aboba-service.com",
                     "type": "string",
                     "maxLength": 255
-                }
-            }
-        },
-        "dto.Replenishment": {
-            "type": "object",
-            "required": [
-                "amount",
-                "user_id"
-            ],
-            "properties": {
-                "amount": {
-                    "description": "@description: Amount is the amount of money, that was transferred.\n@example:     100",
-                    "type": "integer",
-                    "maximum": 1000000,
-                    "minimum": 1
-                },
-                "user_id": {
-                    "description": "@description: UserID is a unique identifier of the user, that owns this transaction.\n@example:     1",
-                    "type": "integer",
-                    "minimum": 1
                 }
             }
         },
@@ -583,20 +563,7 @@ const docTemplate = `{
                 }
             }
         },
-        "dto.UserWallet": {
-            "type": "object",
-            "required": [
-                "user_id"
-            ],
-            "properties": {
-                "user_id": {
-                    "description": "@description: UserID is a unique identifier of the user, that owns this wallet.\n@example:     1",
-                    "type": "integer",
-                    "minimum": 1
-                }
-            }
-        },
-        "dto.Withdrawal": {
+        "dto.Transaction": {
             "type": "object",
             "required": [
                 "amount",
@@ -616,6 +583,19 @@ const docTemplate = `{
                 }
             }
         },
+        "dto.UserWallet": {
+            "type": "object",
+            "required": [
+                "user_id"
+            ],
+            "properties": {
+                "user_id": {
+                    "description": "@description: UserID is a unique identifier of the user, that owns this wallet.\n@example:     1",
+                    "type": "integer",
+                    "minimum": 1
+                }
+            }
+        },
         "models.OuterService": {
             "type": "object",
             "properties": {
@@ -628,7 +608,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "url": {
-                    "description": "@description: URL is a link to the implementation of the service.\n@example:     http://aboba-service.com",
+                    "description": "@description: URL is a link to the implementation of the service.\n@example:     https://aboba-service.com",
                     "type": "string"
                 }
             }
@@ -735,7 +715,7 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "services": {
-                    "description": "@description: Services is a list of services.\n@example:     [{\"id\":1,\"name\":\"aboba-service\",\"url\":\"http://aboba-service.com\"}]",
+                    "description": "@description: Services is a list of services.\n@example:     [{\"id\":1,\"name\":\"aboba-service\",\"url\":\"https://aboba-service.com\"}]",
                     "type": "array",
                     "items": {
                         "$ref": "#/definitions/models.OuterService"

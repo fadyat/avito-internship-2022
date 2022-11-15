@@ -21,7 +21,7 @@ func NewTransactionService(
 	return &TransactionService{r: r, v: v}
 }
 
-func (s *TransactionService) CreateReplenishment(tr dto.Replenishment) (uint64, error) {
+func (s *TransactionService) CreateReplenishment(tr dto.Transaction) (uint64, error) {
 	if err := s.v.Struct(tr); err != nil {
 		return 0, &responses.ValidationErrResp{Message: err.Error()}
 	}
@@ -29,7 +29,7 @@ func (s *TransactionService) CreateReplenishment(tr dto.Replenishment) (uint64, 
 	return s.r.CreateReplenishment(tr)
 }
 
-func (s *TransactionService) CreateWithdrawal(tr dto.Withdrawal) (uint64, error) {
+func (s *TransactionService) CreateWithdrawal(tr dto.Transaction) (uint64, error) {
 	if err := s.v.Struct(tr); err != nil {
 		return 0, &responses.ValidationErrResp{Message: err.Error()}
 	}
@@ -45,7 +45,7 @@ func (s *TransactionService) CreateReservation(tr dto.Reservation) (uint64, erro
 	return s.r.CreateReservation(tr)
 }
 
-func (s *TransactionService) CreateRelease(tr dto.Release) (uint64, error) {
+func (s *TransactionService) CreateRelease(tr dto.Reservation) (uint64, error) {
 	if err := s.v.Struct(tr); err != nil {
 		return 0, &responses.ValidationErrResp{Message: err.Error()}
 	}
