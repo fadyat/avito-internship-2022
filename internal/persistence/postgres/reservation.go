@@ -47,7 +47,13 @@ func (t *TransactionRepo) CreateRelease(tr dto.Reservation) (uint64, error) {
 }
 
 func (t *TransactionRepo) createRelease(tr dto.Reservation) (uint64, error) {
-	// TODO implement me
+	tx, err := t.c.Begin(context.Background())
+	defer func() { _ = tx.Rollback(context.Background()) }()
+	if err != nil {
+		return 0, err
+	}
+
+	// todo: implement me
 	panic("implement me")
 }
 
@@ -57,8 +63,27 @@ func (t *TransactionRepo) CancelReservation(tr dto.Reservation) (uint64, error) 
 }
 
 func (t *TransactionRepo) cancelReservation(tr dto.Reservation) (uint64, error) {
-	// TODO implement me
-	panic("implement me")
+	tx, err := t.c.Begin(context.Background())
+	defer func() { _ = tx.Rollback(context.Background()) }()
+	if err != nil {
+		return 0, err
+	}
+
+	rq := `UPDATE reservations SET status = $1
+           WHERE user_id = $2 AND service_id = $3 AND order_id = $4 AND amount = $5 AND status = 'pending'
+           RETURNING id`
+
+	var id uint64
+	err = tx.QueryRow(context.Background(), rq, models.Canceled, tr.UserID, tr.ServiceID, tr.OrderID, tr.Amount).Scan(&id)
+	if err != nil {
+		return 0, err
+	}
+
+	if err := tx.Commit(context.Background()); err != nil {
+		return 0, err
+	}
+
+	return id, nil
 }
 
 func (t *TransactionRepo) GetUserTransactions(userID, page, perPage uint64, orderBy []string) ([]*models.Transaction, error) {

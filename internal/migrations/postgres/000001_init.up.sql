@@ -29,7 +29,7 @@ create table transactions
     foreign key (user_id) references user_wallets (user_id)
 );
 
-create type reservation_status as enum ('pending', 'approved', 'rejected');
+create type reservation_status as enum ('pending', 'approved', 'cancelled');
 
 create table reservations
 (

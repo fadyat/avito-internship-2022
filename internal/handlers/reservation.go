@@ -15,7 +15,7 @@ import (
 // @tags        Transaction
 // @router      /api/v1/transaction/reservation [post]
 // @summary     Reservation of the user's balance
-// @description Reservation of the user's balance from another service by certain amount and creating a pending transaction
+// @description Reservation of the user's balance from another service
 // @param       body body     dto.Reservation true "Reservation info"
 // @response    201  {object} responses.TransactionCreated
 // @response    400  {object} responses.ErrorResp
@@ -68,9 +68,64 @@ func (h *TransactionHandler) createRelease(c *fiber.Ctx) error {
 	panic("implement me")
 }
 
+// cancelReservation godoc
+// @tags        Transaction
+// @router      /api/v1/transaction/reservation [delete]
+// @summary     Cancel reservation of the user's balance
+// @description Cancel reservation of the user's balance from another service
+// @param       body body     dto.Reservation true "Reservation info"
+// @response    200  {object} responses.TransactionUpdated
+// @response    400  {object} responses.ErrorResp
+// @response    404  {object} responses.ErrorResp
+// @response    422  {object} responses.ErrorResp
+// @response    500  {object} responses.ErrorResp
 func (h *TransactionHandler) cancelReservation(c *fiber.Ctx) error {
-	// todo: implement
-	panic("implement me")
+	var body dto.Reservation
+	if err := c.BodyParser(&body); err != nil {
+		h.l.Debug("failed to parse body", zap.Error(err))
+		return c.Status(fiber.StatusBadRequest).JSON(&responses.ErrorResp{
+			Message:     "Bad request",
+			Description: err.Error(),
+		})
+	}
+
+	id, err := h.s.CancelReservation(body)
+	var verr *responses.ValidationErrResp
+	if errors.As(err, &verr) {
+		h.l.Debug("validation failed", zap.Error(err))
+		return c.Status(fiber.StatusUnprocessableEntity).JSON(&responses.ErrorResp{
+			Message:     "Validation error",
+			Description: err.Error(),
+		})
+	}
+
+	if errors.Is(err, persistence.ErrForeignKeyViolation) {
+		h.l.Debug("service or wallet does not exist", zap.Error(err))
+		return c.Status(fiber.StatusNotFound).JSON(&responses.ErrorResp{
+			Message:     "Service or user wallet not found",
+			Description: err.Error(),
+		})
+	}
+
+	if errors.Is(err, persistence.ErrNotFound) {
+		h.l.Debug("reservation not found", zap.Error(err))
+		return c.Status(fiber.StatusNotFound).JSON(&responses.ErrorResp{
+			Message:     "Reservation not found",
+			Description: err.Error(),
+		})
+	}
+
+	if err != nil {
+		h.l.Error("failed to cancel reservation", zap.Error(err))
+		return c.Status(fiber.StatusInternalServerError).JSON(&responses.ErrorResp{
+			Message:     "Internal server error",
+			Description: err.Error(),
+		})
+	}
+
+	return c.Status(fiber.StatusOK).JSON(&responses.TransactionUpdated{
+		ID: id,
+	})
 }
 
 // getUserTransactions godoc

@@ -39,7 +39,7 @@ type ReservationStatus string
 const (
 	Pending  ReservationStatus = "pending"
 	Approved ReservationStatus = "approved"
-	Rejected ReservationStatus = "rejected"
+	Canceled ReservationStatus = "rejected" // TODO: rename to canceled
 )
 
 type Reservation struct {

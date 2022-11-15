@@ -23,3 +23,12 @@ type TransactionCreated struct {
 	// @example     1
 	ID uint64 `json:"id"`
 }
+
+// TransactionUpdated godoc
+// @description TransactionUpdated is a response for transaction update
+type TransactionUpdated struct {
+
+	// @description ID is given unique identifier of the transaction
+	// @example     1
+	ID uint64 `json:"id"`
+}
