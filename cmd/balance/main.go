@@ -24,7 +24,6 @@ import (
 // @description  This is a sample server for a balance API.
 // @version      1.0.0
 // @host         localhost:80
-// @BasePath     /api/v1
 // @schemes      http
 // @consumes     application/json
 // @produces     application/json

@@ -1,4 +1,3 @@
-basePath: /api/v1
 definitions:
   dto.OuterService:
     properties:
@@ -35,6 +34,39 @@ definitions:
         type: integer
     required:
     - amount
+    - user_id
+    type: object
+  dto.Reservation:
+    properties:
+      amount:
+        description: |-
+          @description: Amount is the amount of money, that was transferred.
+          @example:     100
+        maximum: 1000000
+        minimum: 1
+        type: integer
+      order_id:
+        description: |-
+          @description: OrderID is a unique identifier of the order, that belongs to the service.
+          @example:     1
+        minimum: 1
+        type: integer
+      service_id:
+        description: |-
+          @description: ServiceID is a unique identifier of the service, that made this transaction.
+          @example:     1
+        minimum: 1
+        type: integer
+      user_id:
+        description: |-
+          @description: UserID is a unique identifier of the user, that owns this transaction.
+          @example:     1
+        minimum: 1
+        type: integer
+    required:
+    - amount
+    - order_id
+    - service_id
     - user_id
     type: object
   dto.UserWallet:
@@ -377,6 +409,41 @@ paths:
           schema:
             $ref: '#/definitions/responses.ErrorResp'
       summary: Replenishment of the user's balance
+      tags:
+      - Transaction
+  /api/v1/transaction/reservation:
+    post:
+      description: Reservation of the user's balance from another service by certain
+        amount and creating a pending transaction
+      parameters:
+      - description: Reservation info
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/dto.Reservation'
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/responses.TransactionCreated'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/responses.ErrorResp'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/responses.ErrorResp'
+        "422":
+          description: Unprocessable Entity
+          schema:
+            $ref: '#/definitions/responses.ErrorResp'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/responses.ErrorResp'
+      summary: Reservation of the user's balance
       tags:
       - Transaction
   /api/v1/transaction/user/{id}:

@@ -94,6 +94,11 @@ func (t *TransactionRepo) createWithdrawal(tr dto.Withdrawal) (uint64, error) {
 }
 
 func (t *TransactionRepo) CreateReservation(tr dto.Reservation) (uint64, error) {
+	id, err := t.createReservation(tr)
+	return id, recastError(err)
+}
+
+func (t *TransactionRepo) createReservation(tr dto.Reservation) (uint64, error) {
 	tx, err := t.c.Begin(context.Background())
 	defer func() { _ = tx.Rollback(context.Background()) }()
 	if err != nil {
@@ -121,6 +126,11 @@ func (t *TransactionRepo) CreateReservation(tr dto.Reservation) (uint64, error) 
 }
 
 func (t *TransactionRepo) CreateRelease(tr dto.Release) (uint64, error) {
+	id, err := t.createRelease(tr)
+	return id, recastError(err)
+}
+
+func (t *TransactionRepo) createRelease(tr dto.Release) (uint64, error) {
 	// TODO implement me
 	panic("implement me")
 }

@@ -212,6 +212,58 @@ const docTemplate = `{
                 }
             }
         },
+        "/api/v1/transaction/reservation": {
+            "post": {
+                "description": "Reservation of the user's balance from another service by certain amount and creating a pending transaction",
+                "tags": [
+                    "Transaction"
+                ],
+                "summary": "Reservation of the user's balance",
+                "parameters": [
+                    {
+                        "description": "Reservation info",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.Reservation"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/responses.TransactionCreated"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/responses.ErrorResp"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/responses.ErrorResp"
+                        }
+                    },
+                    "422": {
+                        "description": "Unprocessable Entity",
+                        "schema": {
+                            "$ref": "#/definitions/responses.ErrorResp"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/responses.ErrorResp"
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/transaction/user/{id}": {
             "get": {
                 "description": "Get all user transactions in paginated form",
@@ -499,6 +551,38 @@ const docTemplate = `{
                 }
             }
         },
+        "dto.Reservation": {
+            "type": "object",
+            "required": [
+                "amount",
+                "order_id",
+                "service_id",
+                "user_id"
+            ],
+            "properties": {
+                "amount": {
+                    "description": "@description: Amount is the amount of money, that was transferred.\n@example:     100",
+                    "type": "integer",
+                    "maximum": 1000000,
+                    "minimum": 1
+                },
+                "order_id": {
+                    "description": "@description: OrderID is a unique identifier of the order, that belongs to the service.\n@example:     1",
+                    "type": "integer",
+                    "minimum": 1
+                },
+                "service_id": {
+                    "description": "@description: ServiceID is a unique identifier of the service, that made this transaction.\n@example:     1",
+                    "type": "integer",
+                    "minimum": 1
+                },
+                "user_id": {
+                    "description": "@description: UserID is a unique identifier of the user, that owns this transaction.\n@example:     1",
+                    "type": "integer",
+                    "minimum": 1
+                }
+            }
+        },
         "dto.UserWallet": {
             "type": "object",
             "required": [
@@ -714,7 +798,7 @@ const docTemplate = `{
 var SwaggerInfo = &swag.Spec{
 	Version:          "1.0.0",
 	Host:             "localhost:80",
-	BasePath:         "/api/v1",
+	BasePath:         "",
 	Schemes:          []string{"http"},
 	Title:            "Avito Internship 2022 Balance API",
 	Description:      "This is a sample server for a balance API.",
