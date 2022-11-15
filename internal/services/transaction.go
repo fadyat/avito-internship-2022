@@ -53,6 +53,14 @@ func (s *TransactionService) CreateRelease(tr dto.Reservation) (uint64, error) {
 	return s.r.CreateRelease(tr)
 }
 
+func (s *TransactionService) CancelReservation(tr dto.Reservation) (uint64, error) {
+	if err := s.v.Struct(tr); err != nil {
+		return 0, &responses.ValidationErrResp{Message: err.Error()}
+	}
+
+	return s.r.CancelReservation(tr)
+}
+
 func (s *TransactionService) GetUserTransactions(userID string, page, perPage uint64, orderBy []string) ([]*models.Transaction, error) {
 	uid, err := helpers.ValidateUint64(userID, "required,numeric,gte=1", s.v)
 	if err != nil {
