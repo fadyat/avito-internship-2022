@@ -87,7 +87,6 @@ func (h *TransactionHandler) cancelReservation(c *fiber.Ctx) error {
 // @response    422      {object} responses.ErrorResp
 // @response    500      {object} responses.ErrorResp
 func (h *TransactionHandler) getUserTransactions(c *fiber.Ctx) error {
-
 	var pag models.Pagination
 	if err := c.QueryParser(&pag); err != nil {
 		h.l.Debug("failed to parse query", zap.Error(err))
@@ -108,7 +107,7 @@ func (h *TransactionHandler) getUserTransactions(c *fiber.Ctx) error {
 		})
 	}
 
-	// it will be better to handle this error in service layer, but for rn it's ok
+	// fixme: it will be better to handle this error in service layer, but for rn it's ok
 	if errors.Is(err, persistence.ErrInvalidColumn) {
 		h.l.Debug("invalid column", zap.Error(err))
 		return c.Status(fiber.StatusUnprocessableEntity).JSON(&responses.ErrorResp{

@@ -114,6 +114,14 @@ func (h *TransactionHandler) createWithdrawal(c *fiber.Ctx) error {
 		})
 	}
 
+	if errors.Is(err, persistence.ErrInsufficientFunds) {
+		h.l.Debug("insufficient funds", zap.Error(err))
+		return c.Status(fiber.StatusBadRequest).JSON(&responses.ErrorResp{
+			Message:     "Insufficient funds",
+			Description: err.Error(),
+		})
+	}
+
 	if err != nil {
 		h.l.Error("failed to create withdrawal", zap.Error(err))
 		return c.Status(fiber.StatusInternalServerError).JSON(&responses.ErrorResp{

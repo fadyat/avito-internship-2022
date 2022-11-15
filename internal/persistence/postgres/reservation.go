@@ -73,7 +73,6 @@ func (t *TransactionRepo) getUserTransactions(userID, page, perPage uint64, orde
 		return nil, err
 	}
 
-	// todo: add check that the order by fields are valid
 	q := fmt.Sprintf(
 		"SELECT * FROM transactions WHERE user_id = $1 ORDER BY %s LIMIT $2 OFFSET $3",
 		strings.Join(orderBy, ", "),

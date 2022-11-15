@@ -28,7 +28,6 @@ func (t *TransactionRepo) createReplenishment(tr dto.Transaction) (uint64, error
 		return 0, err
 	}
 
-	// extra validation if validation is not done on the service level
 	if tr.Amount <= 0 {
 		return 0, persistence.ErrNegativeAmount
 	}
@@ -65,12 +64,21 @@ func (t *TransactionRepo) createWithdrawal(tr dto.Transaction) (uint64, error) {
 		return 0, err
 	}
 
-	// extra validation if validation is not done on the service level
 	if tr.Amount <= 0 {
 		return 0, persistence.ErrNegativeAmount
 	}
 
-	// todo: add a check that the user has enough money
+	var balance uint64
+	b := `SELECT balance FROM user_wallets WHERE user_id = $1`
+	err = tx.QueryRow(context.Background(), b, tr.UserID).Scan(&balance)
+	if err != nil {
+		return 0, err
+	}
+
+	if balance < tr.Amount {
+		return 0, persistence.ErrInsufficientFunds
+	}
+
 	wq := `UPDATE user_wallets SET balance = balance - $1 WHERE user_id = $2`
 	_, err = tx.Exec(context.Background(), wq, tr.Amount, tr.UserID)
 	if err != nil {
