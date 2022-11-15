@@ -32,3 +32,21 @@ type TransactionUpdated struct {
 	// @example     1
 	ID uint64 `json:"id"`
 }
+
+// ReservationCancelled godoc
+// @description ReservationCancelled is a response for reservation cancellation
+type ReservationCancelled struct {
+
+	// @description ID is given unique identifier of the reservation
+	// @example     1
+	ID uint64 `json:"id"`
+}
+
+// ReservationReleased godoc
+// @description ReservationReleased is a response for reservation release
+type ReservationReleased struct {
+
+	// @description ID is given unique identifier of the reservation
+	// @example     1
+	ID uint64 `json:"id"`
+}

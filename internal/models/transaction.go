@@ -38,7 +38,7 @@ type ReservationStatus string
 
 const (
 	Pending  ReservationStatus = "pending"
-	Approved ReservationStatus = "approved"
+	Released ReservationStatus = "approved" // TODO: rename to "released"
 	Canceled ReservationStatus = "rejected" // TODO: rename to canceled
 )
 

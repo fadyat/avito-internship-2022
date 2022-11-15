@@ -28,7 +28,8 @@ func (t *TransactionRepo) createReservation(tr dto.Reservation) (uint64, error) 
 
 	var id uint64
 	rq := `INSERT INTO reservations (user_id, service_id, order_id, amount, status)
-		   VALUES ($1, $2, $3, $4, $5) RETURNING id`
+		   VALUES ($1, $2, $3, $4, $5) RETURNING id
+	`
 	err = tx.QueryRow(context.Background(), rq, tr.UserID, tr.ServiceID, tr.OrderID, tr.Amount, models.Pending).Scan(&id)
 	if err != nil {
 		return 0, err
@@ -53,8 +54,35 @@ func (t *TransactionRepo) createRelease(tr dto.Reservation) (uint64, error) {
 		return 0, err
 	}
 
-	// todo: implement me
-	panic("implement me")
+	if _, err = t.CreateWithdrawal(dto.Transaction{
+		UserID: tr.UserID,
+		Amount: tr.Amount,
+	}); err != nil {
+		return 0, err
+	}
+
+	rq := `UPDATE reservations SET status = $1
+           WHERE id = (
+               SELECT id FROM reservations
+           	   WHERE user_id = $2 AND service_id = $3 AND order_id = $4 AND amount = $5 AND status = $6
+           	   LIMIT 1
+           )
+           RETURNING id
+	`
+
+	var id uint64
+	err = tx.QueryRow(
+		context.Background(), rq, models.Released, tr.UserID, tr.ServiceID, tr.OrderID, tr.Amount, models.Pending,
+	).Scan(&id)
+	if err != nil {
+		return 0, err
+	}
+
+	if err := tx.Commit(context.Background()); err != nil {
+		return 0, err
+	}
+
+	return id, nil
 }
 
 func (t *TransactionRepo) CancelReservation(tr dto.Reservation) (uint64, error) {
@@ -70,11 +98,18 @@ func (t *TransactionRepo) cancelReservation(tr dto.Reservation) (uint64, error) 
 	}
 
 	rq := `UPDATE reservations SET status = $1
-           WHERE user_id = $2 AND service_id = $3 AND order_id = $4 AND amount = $5 AND status = 'pending'
-           RETURNING id`
+           WHERE id = (
+               SELECT id FROM reservations
+			   WHERE user_id = $2 AND service_id = $3 AND order_id = $4 AND amount = $5 AND status = $6
+			   LIMIT 1
+           )
+		   RETURNING id
+	`
 
 	var id uint64
-	err = tx.QueryRow(context.Background(), rq, models.Canceled, tr.UserID, tr.ServiceID, tr.OrderID, tr.Amount).Scan(&id)
+	err = tx.QueryRow(
+		context.Background(), rq, models.Canceled, tr.UserID, tr.ServiceID, tr.OrderID, tr.Amount, models.Pending,
+	).Scan(&id)
 	if err != nil {
 		return 0, err
 	}

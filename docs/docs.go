@@ -160,6 +160,58 @@ const docTemplate = `{
                 }
             }
         },
+        "/api/v1/transaction/release": {
+            "post": {
+                "description": "Release of the user's balance to another service",
+                "tags": [
+                    "Transaction"
+                ],
+                "summary": "Release of the user's balance",
+                "parameters": [
+                    {
+                        "description": "Release info",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.Reservation"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/responses.ReservationReleased"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/responses.ErrorResp"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/responses.ErrorResp"
+                        }
+                    },
+                    "422": {
+                        "description": "Unprocessable Entity",
+                        "schema": {
+                            "$ref": "#/definitions/responses.ErrorResp"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/responses.ErrorResp"
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/transaction/replenishment": {
             "post": {
                 "description": "Transaction of the user's balance by a certain amount and creating a replenishment transaction",
@@ -214,7 +266,7 @@ const docTemplate = `{
         },
         "/api/v1/transaction/reservation": {
             "post": {
-                "description": "Reservation of the user's balance from another service by certain amount and creating a pending transaction",
+                "description": "Reservation of the user's balance from another service",
                 "tags": [
                     "Transaction"
                 ],
@@ -235,6 +287,56 @@ const docTemplate = `{
                         "description": "Created",
                         "schema": {
                             "$ref": "#/definitions/responses.TransactionCreated"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/responses.ErrorResp"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/responses.ErrorResp"
+                        }
+                    },
+                    "422": {
+                        "description": "Unprocessable Entity",
+                        "schema": {
+                            "$ref": "#/definitions/responses.ErrorResp"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/responses.ErrorResp"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "Cancel reservation of the user's balance from another service",
+                "tags": [
+                    "Transaction"
+                ],
+                "summary": "Cancel reservation of the user's balance",
+                "parameters": [
+                    {
+                        "description": "Reservation info",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.Reservation"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/responses.ReservationCancelled"
                         }
                     },
                     "400": {
@@ -698,6 +800,26 @@ const docTemplate = `{
                 },
                 "total": {
                     "description": "@description: Total is a total number of items.\n@example:     100",
+                    "type": "integer"
+                }
+            }
+        },
+        "responses.ReservationCancelled": {
+            "description": "ReservationCancelled is a response for reservation cancellation",
+            "type": "object",
+            "properties": {
+                "id": {
+                    "description": "@description ID is given unique identifier of the reservation\n@example     1",
+                    "type": "integer"
+                }
+            }
+        },
+        "responses.ReservationReleased": {
+            "description": "ReservationReleased is a response for reservation release",
+            "type": "object",
+            "properties": {
+                "id": {
+                    "description": "@description ID is given unique identifier of the reservation\n@example     1",
                     "type": "integer"
                 }
             }
