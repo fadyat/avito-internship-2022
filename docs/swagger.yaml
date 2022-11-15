@@ -85,6 +85,34 @@ definitions:
           @example:     http://aboba-service.com
         type: string
     type: object
+  models.Transaction:
+    properties:
+      amount:
+        description: |-
+          @description: Amount is the amount of money, that was transferred.
+          @example:     100
+        type: integer
+      created_at:
+        description: |-
+          @description: CreatedAt is the time, when the transaction was created.
+          @example:     2021-01-01T00:00:00Z
+        type: string
+      id:
+        description: |-
+          @description: ID is a unique identifier of the transaction.
+          @example:     1
+        type: integer
+      type:
+        description: |-
+          @description: Type is the type of the transaction.
+          @example:     Replenishment
+        type: string
+      user_id:
+        description: |-
+          @description: UserID is a unique identifier of the user, that owns this transaction.
+          @example:     1
+        type: integer
+    type: object
   models.UserWallet:
     properties:
       balance:
@@ -119,6 +147,39 @@ definitions:
           @example:     OK
         type: string
     type: object
+  responses.Pagination:
+    properties:
+      found:
+        description: |-
+          @description: Found is a number of found items.
+          @example:     10
+        type: integer
+      next_page:
+        description: |-
+          @description: NextPage is a number of the next page.
+          @example:     3
+        type: integer
+      page:
+        description: |-
+          @description: Page is a number of the current page.
+          @example:     2
+        type: integer
+      per_page:
+        description: |-
+          @description: PerPage is a number of items per page.
+          @example:     10
+        type: integer
+      prev_page:
+        description: |-
+          @description: PrevPage is a number of the previous page.
+          @example:     1
+        type: integer
+      total:
+        description: |-
+          @description: Total is a total number of items.
+          @example:     100
+        type: integer
+    type: object
   responses.ServiceCreated:
     properties:
       id:
@@ -135,6 +196,31 @@ definitions:
           @example:     [{"id":1,"name":"aboba-service","url":"http://aboba-service.com"}]
         items:
           $ref: '#/definitions/models.OuterService'
+        type: array
+    type: object
+  responses.TransactionCreated:
+    description: TransactionCreated is a response for transaction creation
+    properties:
+      id:
+        description: |-
+          @description ID is given unique identifier of the transaction
+          @example     1
+        type: integer
+    type: object
+  responses.TransactionPaginated:
+    description: TransactionPaginated is a response for paginated transactions
+    properties:
+      pagination:
+        $ref: '#/definitions/responses.Pagination'
+        description: |-
+          @description Pagination is a pagination object, which have info about pages
+          @example     {"prev_page":1,"page":2,"next_page":3,"found":10,"limit":10,"total":100}
+      transactions:
+        description: |-
+          @description Transactions is a list of transactions, which are paginated by page and perPage
+          @example     [{"id":1,"user_id":1,"service_id":1,"amount":100,"type":"replenishment","created_at":"2021-10-01T00:00:00Z"}]
+        items:
+          $ref: '#/definitions/models.Transaction'
         type: array
     type: object
   responses.UserWalletCreated:
@@ -229,6 +315,7 @@ paths:
       description: Get outer service info in the system by id
       parameters:
       - description: service_id
+        format: uint64
         in: path
         name: id
         required: true
@@ -269,6 +356,62 @@ paths:
         schema:
           $ref: '#/definitions/dto.Replenishment'
       responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/responses.TransactionCreated'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/responses.ErrorResp'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/responses.ErrorResp'
+        "422":
+          description: Unprocessable Entity
+          schema:
+            $ref: '#/definitions/responses.ErrorResp'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/responses.ErrorResp'
+      summary: Replenishment of the user's balance
+      tags:
+      - Transaction
+  /api/v1/transaction/user/{id}:
+    get:
+      description: Get all user transactions in paginated form
+      parameters:
+      - description: User ID
+        format: uint64
+        in: path
+        name: id
+        required: true
+        type: integer
+      - default: 1
+        description: Page number
+        in: query
+        name: page
+        type: integer
+      - default: 10
+        description: Page size
+        in: query
+        name: per_page
+        type: integer
+      - default: created_at, amount
+        description: Order by
+        enum:
+        - created_at
+        - amount
+        in: query
+        name: order_by
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/responses.TransactionPaginated'
         "400":
           description: Bad Request
           schema:
@@ -281,7 +424,7 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/responses.ErrorResp'
-      summary: Replenishment of the user's balance
+      summary: Get user transactions
       tags:
       - Transaction
   /api/v1/transaction/withdrawal:
@@ -296,8 +439,16 @@ paths:
         schema:
           $ref: '#/definitions/dto.Withdrawal'
       responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/responses.TransactionCreated'
         "400":
           description: Bad Request
+          schema:
+            $ref: '#/definitions/responses.ErrorResp'
+        "404":
+          description: Not Found
           schema:
             $ref: '#/definitions/responses.ErrorResp'
         "422":
@@ -344,6 +495,10 @@ paths:
           description: Bad Request
           schema:
             $ref: '#/definitions/responses.ErrorResp'
+        "407":
+          description: Proxy Authentication Required
+          schema:
+            $ref: '#/definitions/responses.ErrorResp'
         "422":
           description: Unprocessable Entity
           schema:
@@ -360,6 +515,7 @@ paths:
       description: Get user wallet from the system by id
       parameters:
       - description: Wallet id
+        format: uint64
         in: path
         name: id
         required: true

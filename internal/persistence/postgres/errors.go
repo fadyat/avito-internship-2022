@@ -15,6 +15,8 @@ func recastError(err error) error {
 			return persistence.ErrUniqueViolation
 		case "23503":
 			return persistence.ErrForeignKeyViolation
+		case "42703":
+			return persistence.ErrInvalidColumn
 		}
 	} else if errors.Is(err, pgx.ErrNoRows) {
 		return persistence.ErrNotFound

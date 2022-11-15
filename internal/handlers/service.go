@@ -99,7 +99,7 @@ func (h *OuterServiceHandler) getServices(c *fiber.Ctx) error {
 // @router      /api/v1/service/{id} [get]
 // @summary     Get service by id
 // @description Get outer service info in the system by id
-// @param       id  path     uint64 true "service_id"
+// @param       id  path     uint64 true "service_id" Format(uint64)
 // @response    200 {object} models.OuterService
 // @response    400 {object} responses.ErrorResp
 // @response    404 {object} responses.ErrorResp

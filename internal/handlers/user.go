@@ -31,6 +31,7 @@ func NewUserWalletHandler(
 // @param       body body     dto.UserWallet true "Wallet info"
 // @response    201  {object} responses.UserWalletCreated
 // @response    400  {object} responses.ErrorResp
+// @response    407  {object} responses.ErrorResp
 // @response    422  {object} responses.ErrorResp
 // @response    500  {object} responses.ErrorResp
 func (h *UserWalletHandler) createWallet(c *fiber.Ctx) error {
@@ -106,7 +107,7 @@ func (h *UserWalletHandler) getWallets(c *fiber.Ctx) error {
 // @router      /api/v1/wallet/{id} [get]
 // @summary     Get wallet
 // @description Get user wallet from the system by id
-// @param       id  path     int true "Wallet id"
+// @param       id  path     int true "Wallet id" Format(uint64)
 // @response    200 {object} models.UserWallet
 // @response    400 {object} responses.ErrorResp
 // @response    404 {object} responses.ErrorResp

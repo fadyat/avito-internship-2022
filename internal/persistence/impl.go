@@ -11,6 +11,7 @@ var (
 	ErrUniqueViolation     = errors.New("unique violation")
 	ErrForeignKeyViolation = errors.New("foreign key violation")
 	ErrNegativeAmount      = errors.New("negative amount")
+	ErrInvalidColumn       = errors.New("invalid column")
 )
 
 type IHealthRepo interface {

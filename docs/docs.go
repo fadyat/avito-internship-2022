@@ -119,6 +119,7 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "integer",
+                        "format": "uint64",
                         "description": "service_id",
                         "name": "id",
                         "in": "path",
@@ -178,6 +179,88 @@ const docTemplate = `{
                     }
                 ],
                 "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/responses.TransactionCreated"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/responses.ErrorResp"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/responses.ErrorResp"
+                        }
+                    },
+                    "422": {
+                        "description": "Unprocessable Entity",
+                        "schema": {
+                            "$ref": "#/definitions/responses.ErrorResp"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/responses.ErrorResp"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/transaction/user/{id}": {
+            "get": {
+                "description": "Get all user transactions in paginated form",
+                "tags": [
+                    "Transaction"
+                ],
+                "summary": "Get user transactions",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "format": "uint64",
+                        "description": "User ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "default": 1,
+                        "description": "Page number",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "default": 10,
+                        "description": "Page size",
+                        "name": "per_page",
+                        "in": "query"
+                    },
+                    {
+                        "enum": [
+                            "created_at",
+                            "amount"
+                        ],
+                        "type": "string",
+                        "default": "created_at, amount",
+                        "description": "Order by",
+                        "name": "order_by",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/responses.TransactionPaginated"
+                        }
+                    },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
@@ -218,8 +301,20 @@ const docTemplate = `{
                     }
                 ],
                 "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/responses.TransactionCreated"
+                        }
+                    },
                     "400": {
                         "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/responses.ErrorResp"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
                         "schema": {
                             "$ref": "#/definitions/responses.ErrorResp"
                         }
@@ -291,6 +386,12 @@ const docTemplate = `{
                             "$ref": "#/definitions/responses.ErrorResp"
                         }
                     },
+                    "407": {
+                        "description": "Proxy Authentication Required",
+                        "schema": {
+                            "$ref": "#/definitions/responses.ErrorResp"
+                        }
+                    },
                     "422": {
                         "description": "Unprocessable Entity",
                         "schema": {
@@ -316,6 +417,7 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "integer",
+                        "format": "uint64",
                         "description": "Wallet id",
                         "name": "id",
                         "in": "path",
@@ -447,6 +549,31 @@ const docTemplate = `{
                 }
             }
         },
+        "models.Transaction": {
+            "type": "object",
+            "properties": {
+                "amount": {
+                    "description": "@description: Amount is the amount of money, that was transferred.\n@example:     100",
+                    "type": "integer"
+                },
+                "created_at": {
+                    "description": "@description: CreatedAt is the time, when the transaction was created.\n@example:     2021-01-01T00:00:00Z",
+                    "type": "string"
+                },
+                "id": {
+                    "description": "@description: ID is a unique identifier of the transaction.\n@example:     1",
+                    "type": "integer"
+                },
+                "type": {
+                    "description": "@description: Type is the type of the transaction.\n@example:     Replenishment",
+                    "type": "string"
+                },
+                "user_id": {
+                    "description": "@description: UserID is a unique identifier of the user, that owns this transaction.\n@example:     1",
+                    "type": "integer"
+                }
+            }
+        },
         "models.UserWallet": {
             "type": "object",
             "properties": {
@@ -482,6 +609,35 @@ const docTemplate = `{
                 }
             }
         },
+        "responses.Pagination": {
+            "type": "object",
+            "properties": {
+                "found": {
+                    "description": "@description: Found is a number of found items.\n@example:     10",
+                    "type": "integer"
+                },
+                "next_page": {
+                    "description": "@description: NextPage is a number of the next page.\n@example:     3",
+                    "type": "integer"
+                },
+                "page": {
+                    "description": "@description: Page is a number of the current page.\n@example:     2",
+                    "type": "integer"
+                },
+                "per_page": {
+                    "description": "@description: PerPage is a number of items per page.\n@example:     10",
+                    "type": "integer"
+                },
+                "prev_page": {
+                    "description": "@description: PrevPage is a number of the previous page.\n@example:     1",
+                    "type": "integer"
+                },
+                "total": {
+                    "description": "@description: Total is a total number of items.\n@example:     100",
+                    "type": "integer"
+                }
+            }
+        },
         "responses.ServiceCreated": {
             "type": "object",
             "properties": {
@@ -499,6 +655,33 @@ const docTemplate = `{
                     "type": "array",
                     "items": {
                         "$ref": "#/definitions/models.OuterService"
+                    }
+                }
+            }
+        },
+        "responses.TransactionCreated": {
+            "description": "TransactionCreated is a response for transaction creation",
+            "type": "object",
+            "properties": {
+                "id": {
+                    "description": "@description ID is given unique identifier of the transaction\n@example     1",
+                    "type": "integer"
+                }
+            }
+        },
+        "responses.TransactionPaginated": {
+            "description": "TransactionPaginated is a response for paginated transactions",
+            "type": "object",
+            "properties": {
+                "pagination": {
+                    "description": "@description Pagination is a pagination object, which have info about pages\n@example     {\"prev_page\":1,\"page\":2,\"next_page\":3,\"found\":10,\"limit\":10,\"total\":100}",
+                    "$ref": "#/definitions/responses.Pagination"
+                },
+                "transactions": {
+                    "description": "@description Transactions is a list of transactions, which are paginated by page and perPage\n@example     [{\"id\":1,\"user_id\":1,\"service_id\":1,\"amount\":100,\"type\":\"replenishment\",\"created_at\":\"2021-10-01T00:00:00Z\"}]",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.Transaction"
                     }
                 }
             }

@@ -38,7 +38,7 @@ func InitRoutes(app *fiber.App, psql *pgx.Conn, log *zap.Logger, validate *valid
 	tr := postgres.NewTransactionRepo(psql)
 	ts := services.NewTransactionService(tr, validate)
 	th := NewTransactionHandler(ts, log)
-	v1.Get("/transaction/user/:user_id<int>", th.getUserTransactions)
+	v1.Get("/transaction/user/:id<int>", th.getUserTransactions)
 	v1.Post("/transaction/replenishment", th.createReplenishment)
 	v1.Post("/transaction/withdrawal", th.createWithdrawal)
 	v1.Post("/transaction/reservation", th.createReservation)

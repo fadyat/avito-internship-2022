@@ -32,6 +32,7 @@ func NewTransactionHandler(
 // @param       body body     dto.Replenishment true "Replenishment info"
 // @response    201  {object} responses.TransactionCreated
 // @response    400  {object} responses.ErrorResp
+// @response    404  {object} responses.ErrorResp
 // @response    422  {object} responses.ErrorResp
 // @response    500  {object} responses.ErrorResp
 func (h *TransactionHandler) createReplenishment(c *fiber.Ctx) error {
@@ -83,11 +84,48 @@ func (h *TransactionHandler) createReplenishment(c *fiber.Ctx) error {
 // @param       body body     dto.Withdrawal true "Withdrawal info"
 // @response    201  {object} responses.TransactionCreated
 // @response    400  {object} responses.ErrorResp
+// @response    404  {object} responses.ErrorResp
 // @response    422  {object} responses.ErrorResp
 // @response    500  {object} responses.ErrorResp
 func (h *TransactionHandler) createWithdrawal(c *fiber.Ctx) error {
-	// todo: implement
-	panic("implement me")
+	var body dto.Withdrawal
+	if err := c.BodyParser(&body); err != nil {
+		h.l.Debug("failed to parse body", zap.Error(err))
+		return c.Status(fiber.StatusBadRequest).JSON(&responses.ErrorResp{
+			Message:     "Bad request",
+			Description: err.Error(),
+		})
+	}
+
+	id, err := h.s.CreateWithdrawal(body)
+	var verr *responses.ValidationErrResp
+	if errors.As(err, &verr) {
+		h.l.Debug("validation failed", zap.Error(err))
+		return c.Status(fiber.StatusUnprocessableEntity).JSON(&responses.ErrorResp{
+			Message:     "Validation error",
+			Description: err.Error(),
+		})
+	}
+
+	if errors.Is(err, persistence.ErrForeignKeyViolation) {
+		h.l.Debug("wallet does not exist", zap.Error(err))
+		return c.Status(fiber.StatusNotFound).JSON(&responses.ErrorResp{
+			Message:     "User wallet not found",
+			Description: err.Error(),
+		})
+	}
+
+	if err != nil {
+		h.l.Error("failed to create withdrawal", zap.Error(err))
+		return c.Status(fiber.StatusInternalServerError).JSON(&responses.ErrorResp{
+			Message:     "Internal server error",
+			Description: err.Error(),
+		})
+	}
+
+	return c.Status(fiber.StatusCreated).JSON(&responses.TransactionCreated{
+		ID: id,
+	})
 }
 
 func (h *TransactionHandler) createReservation(c *fiber.Ctx) error {
@@ -100,6 +138,19 @@ func (h *TransactionHandler) createRelease(c *fiber.Ctx) error {
 	panic("implement me")
 }
 
+// getUserTransactions godoc
+// @tags        Transaction
+// @router      /api/v1/transaction/user/{id} [get]
+// @summary     Get user transactions
+// @description Get all user transactions in paginated form
+// @param       id       path     int    true  "User ID"     Format(uint64)
+// @param       page     query    int    false "Page number" default(1)
+// @param       per_page query    int    false "Page size"   default(10)
+// @param       order_by query    string false "Order by"    Enums(created_at, amount) default(created_at, amount)
+// @response    200      {object} responses.TransactionPaginated
+// @response    400      {object} responses.ErrorResp
+// @response    422      {object} responses.ErrorResp
+// @response    500      {object} responses.ErrorResp
 func (h *TransactionHandler) getUserTransactions(c *fiber.Ctx) error {
 
 	var pag models.Pagination
@@ -112,9 +163,25 @@ func (h *TransactionHandler) getUserTransactions(c *fiber.Ctx) error {
 	}
 	helpers.MakePaginationParamsCorrect(&pag)
 
-	ts, err := h.s.GetUserTransactions(c.Params("user_id"), pag.Page, pag.PerPage, pag.OrderBy)
+	ts, err := h.s.GetUserTransactions(c.Params("id"), pag.Page, pag.PerPage, pag.OrderBy)
+	verr := &responses.ValidationErrResp{}
+	if errors.As(err, &verr) {
+		h.l.Debug("validation failed", zap.Error(err))
+		return c.Status(fiber.StatusUnprocessableEntity).JSON(&responses.ErrorResp{
+			Message:     "Validation error",
+			Description: err.Error(),
+		})
+	}
 
-	// todo: change error handling
+	// it will be better to handle this error in service layer, but for rn it's ok
+	if errors.Is(err, persistence.ErrInvalidColumn) {
+		h.l.Debug("invalid column", zap.Error(err))
+		return c.Status(fiber.StatusUnprocessableEntity).JSON(&responses.ErrorResp{
+			Message:     "Validation error",
+			Description: err.Error(),
+		})
+	}
+
 	if err != nil {
 		h.l.Error("failed to get user transactions", zap.Error(err))
 		return c.Status(fiber.StatusInternalServerError).JSON(&responses.ErrorResp{
@@ -127,7 +194,7 @@ func (h *TransactionHandler) getUserTransactions(c *fiber.Ctx) error {
 		ts = make([]*models.Transaction, 0)
 	}
 
-	total, err := h.s.GetUserTransactionsCount(c.Params("user_id"))
+	total, err := h.s.GetUserTransactionsCount(c.Params("id"))
 	if err != nil {
 		h.l.Error("failed to get user transactions count", zap.Error(err))
 	}

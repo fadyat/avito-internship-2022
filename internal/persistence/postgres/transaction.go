@@ -94,8 +94,30 @@ func (t *TransactionRepo) createWithdrawal(tr dto.Withdrawal) (uint64, error) {
 }
 
 func (t *TransactionRepo) CreateReservation(tr dto.Reservation) (uint64, error) {
-	// TODO implement me
-	panic("implement me")
+	tx, err := t.c.Begin(context.Background())
+	defer func() { _ = tx.Rollback(context.Background()) }()
+	if err != nil {
+		return 0, err
+	}
+
+	// extra validation if validation is not done on the service level
+	if tr.Amount <= 0 {
+		return 0, persistence.ErrNegativeAmount
+	}
+
+	var id uint64
+	rq := `INSERT INTO reservations (user_id, service_id, order_id, amount, status)
+		   VALUES ($1, $2, $3, $4, $5) RETURNING id`
+	err = tx.QueryRow(context.Background(), rq, tr.UserID, tr.ServiceID, tr.OrderID, tr.Amount, models.Pending).Scan(&id)
+	if err != nil {
+		return 0, err
+	}
+
+	if err := tx.Commit(context.Background()); err != nil {
+		return 0, err
+	}
+
+	return id, nil
 }
 
 func (t *TransactionRepo) CreateRelease(tr dto.Release) (uint64, error) {
@@ -104,6 +126,11 @@ func (t *TransactionRepo) CreateRelease(tr dto.Release) (uint64, error) {
 }
 
 func (t *TransactionRepo) GetUserTransactions(userID, page, perPage uint64, orderBy []string) ([]*models.Transaction, error) {
+	ts, err := t.getUserTransactions(userID, page, perPage, orderBy)
+	return ts, recastError(err)
+}
+
+func (t *TransactionRepo) getUserTransactions(userID, page, perPage uint64, orderBy []string) ([]*models.Transaction, error) {
 	tx, err := t.c.Begin(context.Background())
 	defer func() { _ = tx.Rollback(context.Background()) }()
 	if err != nil {
@@ -133,8 +160,12 @@ func (t *TransactionRepo) GetUserTransactions(userID, page, perPage uint64, orde
 
 	return ts, nil
 }
-
 func (t *TransactionRepo) GetUserTransactionsCount(userID uint64) (uint64, error) {
+	count, err := t.getUserTransactionsCount(userID)
+	return count, recastError(err)
+}
+
+func (t *TransactionRepo) getUserTransactionsCount(userID uint64) (uint64, error) {
 	tx, err := t.c.Begin(context.Background())
 	defer func() { _ = tx.Rollback(context.Background()) }()
 	if err != nil {
