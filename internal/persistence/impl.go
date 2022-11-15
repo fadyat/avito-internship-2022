@@ -52,6 +52,14 @@ type ITransactionRepo interface {
 	// CreateRelease godoc
 	// @description: CreateRelease creates a new release transaction
 	CreateRelease(tr dto.Release) (uint64, error)
+
+	// GetUserTransactions godoc
+	// @description: GetUserTransactions returns a paginated result of all transactions of a user
+	GetUserTransactions(userID, page, perPage uint64, orderBy []string) ([]*models.Transaction, error)
+
+	// GetUserTransactionsCount godoc
+	// @description: GetUserTransactionsCount returns the number of all transactions of a user
+	GetUserTransactionsCount(userID uint64) (uint64, error)
 }
 
 type IOuterServiceRepo interface {

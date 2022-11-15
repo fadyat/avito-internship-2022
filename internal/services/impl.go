@@ -26,6 +26,6 @@ type ITransactionService interface {
 	CreateWithdrawal(tr dto.Withdrawal) (uint64, error)
 	CreateReservation(tr dto.Reservation) (uint64, error)
 	CreateRelease(tr dto.Release) (uint64, error)
-	GetAllTransactions() ([]*models.Transaction, error)
-	GetTransactionByID(id string) (*models.Transaction, error)
+	GetUserTransactions(userID string, page, perPage uint64, orderBy []string) ([]*models.Transaction, error)
+	GetUserTransactionsCount(userID string) (uint64, error)
 }

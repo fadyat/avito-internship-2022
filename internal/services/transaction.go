@@ -1,6 +1,7 @@
 package services
 
 import (
+	"github.com/fadyat/avito-internship-2022/internal/helpers"
 	"github.com/fadyat/avito-internship-2022/internal/models"
 	"github.com/fadyat/avito-internship-2022/internal/models/dto"
 	"github.com/fadyat/avito-internship-2022/internal/persistence"
@@ -52,12 +53,20 @@ func (s *TransactionService) CreateRelease(tr dto.Release) (uint64, error) {
 	return s.r.CreateRelease(tr)
 }
 
-func (s *TransactionService) GetAllTransactions() ([]*models.Transaction, error) {
-	// TODO implement me
-	panic("implement me")
+func (s *TransactionService) GetUserTransactions(userID string, page, perPage uint64, orderBy []string) ([]*models.Transaction, error) {
+	uid, err := helpers.ValidateUint64(userID, "required,numeric,gte=1", s.v)
+	if err != nil {
+		return nil, err
+	}
+
+	return s.r.GetUserTransactions(uid, page, perPage, orderBy)
 }
 
-func (s *TransactionService) GetTransactionByID(id string) (*models.Transaction, error) {
-	// TODO implement me
-	panic("implement me")
+func (s *TransactionService) GetUserTransactionsCount(userID string) (uint64, error) {
+	uid, err := helpers.ValidateUint64(userID, "required,numeric,gte=1", s.v)
+	if err != nil {
+		return 0, err
+	}
+
+	return s.r.GetUserTransactionsCount(uid)
 }

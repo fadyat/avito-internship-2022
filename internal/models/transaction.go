@@ -1,5 +1,7 @@
 package models
 
+import "time"
+
 type TransactionType string
 
 const (
@@ -26,6 +28,10 @@ type Transaction struct {
 	// @description: Type is the type of the transaction.
 	// @example:     Replenishment
 	Type TransactionType `json:"type"`
+
+	// @description: CreatedAt is the time, when the transaction was created.
+	// @example:     2021-01-01T00:00:00Z
+	CreatedAt time.Time `json:"created_at"`
 }
 
 type ReservationStatus string

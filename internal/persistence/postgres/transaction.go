@@ -2,10 +2,12 @@ package postgres
 
 import (
 	"context"
+	"fmt"
 	"github.com/fadyat/avito-internship-2022/internal/models"
 	"github.com/fadyat/avito-internship-2022/internal/models/dto"
 	"github.com/fadyat/avito-internship-2022/internal/persistence"
 	"github.com/jackc/pgx/v5"
+	"strings"
 )
 
 type TransactionRepo struct {
@@ -99,4 +101,56 @@ func (t *TransactionRepo) CreateReservation(tr dto.Reservation) (uint64, error) 
 func (t *TransactionRepo) CreateRelease(tr dto.Release) (uint64, error) {
 	// TODO implement me
 	panic("implement me")
+}
+
+func (t *TransactionRepo) GetUserTransactions(userID, page, perPage uint64, orderBy []string) ([]*models.Transaction, error) {
+	tx, err := t.c.Begin(context.Background())
+	defer func() { _ = tx.Rollback(context.Background()) }()
+	if err != nil {
+		return nil, err
+	}
+
+	// todo: add check that the order by fields are valid
+	q := fmt.Sprintf(
+		"SELECT * FROM transactions WHERE user_id = $1 ORDER BY %s LIMIT $2 OFFSET $3",
+		strings.Join(orderBy, ", "),
+	)
+	rows, err := tx.Query(context.Background(), q, userID, perPage, (page-1)*perPage)
+	if err != nil {
+		return nil, err
+	}
+
+	var ts []*models.Transaction
+	for rows.Next() {
+		var tr models.Transaction
+		_ = rows.Scan(&tr.ID, &tr.UserID, &tr.Amount, &tr.Type, &tr.CreatedAt)
+		ts = append(ts, &tr)
+	}
+
+	if err := tx.Commit(context.Background()); err != nil {
+		return nil, err
+	}
+
+	return ts, nil
+}
+
+func (t *TransactionRepo) GetUserTransactionsCount(userID uint64) (uint64, error) {
+	tx, err := t.c.Begin(context.Background())
+	defer func() { _ = tx.Rollback(context.Background()) }()
+	if err != nil {
+		return 0, err
+	}
+
+	q := `SELECT COUNT(*) FROM transactions WHERE user_id = $1`
+	var cnt uint64
+	err = tx.QueryRow(context.Background(), q, userID).Scan(&cnt)
+	if err != nil {
+		return 0, err
+	}
+
+	if err := tx.Commit(context.Background()); err != nil {
+		return 0, err
+	}
+
+	return cnt, nil
 }

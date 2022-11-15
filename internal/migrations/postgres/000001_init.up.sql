@@ -19,10 +19,11 @@ create type transaction_type as enum ('replenishment', 'withdrawal');
 
 create table transactions
 (
-    id      int generated always as identity,
-    user_id int              not null,
-    amount  int              not null,
-    type    transaction_type not null,
+    id         int generated always as identity,
+    user_id    int              not null,
+    amount     int              not null,
+    type       transaction_type not null,
+    created_at timestamp default current_timestamp,
 
     primary key (id),
     foreign key (user_id) references user_wallets (user_id)
