@@ -8,7 +8,7 @@ type ServiceCreated struct {
 
 	// @description: ID is given unique identifier of the service.
 	// @example:     1
-	ID string `json:"id"`
+	ID uint64 `json:"id"`
 }
 
 // Services godoc

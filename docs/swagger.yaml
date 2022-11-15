@@ -87,7 +87,7 @@ definitions:
         description: |-
           @description: ID is given unique identifier of the service.
           @example:     1
-        type: string
+        type: integer
     type: object
   responses.Services:
     properties:

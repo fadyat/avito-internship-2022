@@ -12,7 +12,7 @@ type IHealthService interface {
 
 type IUserWalletService interface {
 	CreateUserWallet(w dto.UserWallet) (uint64, error)
-	GetAllWallets() ([]*models.UserWallet, error)
+	GetAllUserWallets() ([]*models.UserWallet, error)
 	GetUserWalletByID(id string) (*models.UserWallet, error)
 }
 

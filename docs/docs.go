@@ -379,7 +379,7 @@ const docTemplate = `{
             "properties": {
                 "id": {
                     "description": "@description: ID is given unique identifier of the service.\n@example:     1",
-                    "type": "string"
+                    "type": "integer"
                 }
             }
         },

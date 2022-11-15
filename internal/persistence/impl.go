@@ -1,8 +1,15 @@
 package persistence
 
 import (
+	"errors"
 	"github.com/fadyat/avito-internship-2022/internal/models"
 	"github.com/fadyat/avito-internship-2022/internal/models/dto"
+)
+
+var (
+	ErrNotFound            = errors.New("not found")
+	ErrUniqueViolation     = errors.New("unique violation")
+	ErrForeignKeyViolation = errors.New("foreign key violation")
 )
 
 type IHealthRepo interface {

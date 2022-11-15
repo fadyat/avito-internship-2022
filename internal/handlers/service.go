@@ -1,16 +1,15 @@
 package handlers
 
 import (
-	"database/sql"
 	"errors"
 	"fmt"
 	"github.com/fadyat/avito-internship-2022/internal/models"
 	"github.com/fadyat/avito-internship-2022/internal/models/dto"
+	"github.com/fadyat/avito-internship-2022/internal/persistence"
 	"github.com/fadyat/avito-internship-2022/internal/responses"
 	"github.com/fadyat/avito-internship-2022/internal/services"
 	"github.com/gofiber/fiber/v2"
 	"go.uber.org/zap"
-	"strconv"
 )
 
 type OuterServiceHandler struct {
@@ -64,7 +63,7 @@ func (h *OuterServiceHandler) createService(c *fiber.Ctx) error {
 	}
 
 	return c.Status(fiber.StatusCreated).JSON(&responses.ServiceCreated{
-		ID: strconv.Itoa(int(id)),
+		ID: id,
 	})
 }
 
@@ -78,7 +77,7 @@ func (h *OuterServiceHandler) createService(c *fiber.Ctx) error {
 // @response    500 {object} responses.ErrorResp
 func (h *OuterServiceHandler) getServices(c *fiber.Ctx) error {
 	svcs, err := h.s.GetAllServices()
-	if errors.Is(err, sql.ErrNoRows) {
+	if errors.Is(err, persistence.ErrNotFound) {
 		h.l.Debug("services not found", zap.Error(err))
 		return c.Status(fiber.StatusNotFound).JSON(&responses.ErrorResp{
 			Message:     "Not found",
@@ -125,7 +124,7 @@ func (h *OuterServiceHandler) getServiceByID(c *fiber.Ctx) error {
 		})
 	}
 
-	if errors.Is(err, sql.ErrNoRows) {
+	if errors.Is(err, persistence.ErrNotFound) {
 		h.l.Debug("service not found", zap.Error(err))
 		return c.Status(fiber.StatusNotFound).JSON(&responses.ErrorResp{
 			Message:     "Not found",

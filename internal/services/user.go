@@ -42,6 +42,6 @@ func (s *UserWalletService) GetUserWalletByID(id string) (*models.UserWallet, er
 	return s.r.GetUserWalletByID(uid)
 }
 
-func (s *UserWalletService) GetAllWallets() ([]*models.UserWallet, error) {
+func (s *UserWalletService) GetAllUserWallets() ([]*models.UserWallet, error) {
 	return s.r.GetAllWallets()
 }
