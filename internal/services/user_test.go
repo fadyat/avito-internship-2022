@@ -5,15 +5,13 @@ import (
 	"github.com/fadyat/avito-internship-2022/internal/models/dto"
 	"github.com/fadyat/avito-internship-2022/internal/persistence/mock"
 	"github.com/fadyat/avito-internship-2022/internal/responses"
-	"github.com/go-playground/validator/v10"
 	"github.com/stretchr/testify/require"
 	"reflect"
 	"testing"
 )
 
 var (
-	mockedWalletRepo  = &mock.MockedUserWalletRepo{}
-	validate          = validator.New()
+	mockedWalletRepo  = &mock.UserWalletRepo{}
 	userWalletService = NewUserWalletService(mockedWalletRepo, validate)
 )
 
@@ -96,11 +94,9 @@ type testGetAllUserWallets struct {
 func TestUserWalletService_GetAllUserWallets(t *testing.T) {
 	tests := []testGetAllUserWallets{
 		{
-			name:   "get all wallets",
+			name:   "no errors",
 			expErr: nil,
-			expRes: []*models.UserWallet{
-				{UserID: 1, Balance: 0},
-			},
+			expRes: []*models.UserWallet{{UserID: 1, Balance: 0}},
 		},
 	}
 
