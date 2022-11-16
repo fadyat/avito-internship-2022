@@ -1,6 +1,7 @@
 package services
 
 import (
+	"github.com/fadyat/avito-internship-2022/internal/models"
 	"github.com/fadyat/avito-internship-2022/internal/models/dto"
 	"github.com/fadyat/avito-internship-2022/internal/responses"
 	"github.com/stretchr/testify/require"
@@ -149,6 +150,52 @@ func TestTransactionService_CancelReservation(t *testing.T) {
 			id, err := transactionService.CancelReservation(tt.res)
 			require.Equal(t, reflect.TypeOf(err), reflect.TypeOf(tt.errRes))
 			require.Equal(t, id, tt.expRes)
+		})
+	}
+}
+
+type testReservationReport struct {
+	name   string
+	res    dto.ReportTime
+	errRes error
+	expRes []*models.ReservationReport
+}
+
+func TestTransactionService_GetReservationsReport(t *testing.T) {
+	var tests = []testReservationReport{
+		{
+			name: "no errors",
+			res: dto.ReportTime{
+				Year:  2021,
+				Month: 1,
+			},
+			errRes: nil,
+			expRes: make([]*models.ReservationReport, 0),
+		},
+		{
+			name: "year is lt 1",
+			res: dto.ReportTime{
+				Year:  0,
+				Month: 1,
+			},
+			errRes: &responses.ValidationErrResp{},
+			expRes: nil,
+		},
+		{
+			name: "month is lt 1",
+			res: dto.ReportTime{
+				Year:  2021,
+				Month: 0,
+			},
+			errRes: &responses.ValidationErrResp{},
+			expRes: nil,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			_, err := transactionService.GetReservationsReport(tt.res)
+			require.Equal(t, reflect.TypeOf(err), reflect.TypeOf(tt.errRes))
 		})
 	}
 }

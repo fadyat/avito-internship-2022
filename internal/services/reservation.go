@@ -1,6 +1,7 @@
 package services
 
 import (
+	"github.com/fadyat/avito-internship-2022/internal/models"
 	"github.com/fadyat/avito-internship-2022/internal/models/dto"
 	"github.com/fadyat/avito-internship-2022/internal/responses"
 )
@@ -27,4 +28,12 @@ func (s *TransactionService) CancelReservation(tr dto.Reservation) (uint64, erro
 	}
 
 	return s.r.CancelReservation(tr)
+}
+
+func (s *TransactionService) GetReservationsReport(tm dto.ReportTime) ([]*models.ReservationReport, error) {
+	if err := s.v.Struct(tm); err != nil {
+		return nil, &responses.ValidationErrResp{Message: err.Error()}
+	}
+
+	return s.r.GetReservationsReport(tm)
 }

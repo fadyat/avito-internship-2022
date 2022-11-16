@@ -201,6 +201,35 @@ func (t *TransactionRepo) getUserTransactionsCount(userID uint64) (uint64, error
 }
 
 func (t *TransactionRepo) GetReservationsReport(tm dto.ReportTime) ([]*models.ReservationReport, error) {
-	//TODO implement me
-	panic("implement me")
+	tx, err := t.c.Begin(context.Background())
+	defer func() { _ = tx.Rollback(context.Background()) }()
+	if err != nil {
+		return nil, err
+	}
+
+	rq := `SELECT service_id, order_id, SUM(amount) AS amount, COUNT(*) AS count
+		   FROM reservations
+		   WHERE date_trunc('year', created_at) = $1 AND
+		         date_trunc('month', created_at) = $2 AND
+		         status = $3
+		   GROUP BY service_id, order_id
+	`
+
+	rows, err := tx.Query(context.Background(), rq, tm.Year, tm.Month, models.Released)
+	if err != nil {
+		return nil, err
+	}
+
+	var rs []*models.ReservationReport
+	for rows.Next() {
+		var r models.ReservationReport
+		_ = rows.Scan(&r.ServiceID, &r.OrderID, &r.Amount, &r.Count)
+		rs = append(rs, &r)
+	}
+
+	if err := tx.Commit(context.Background()); err != nil {
+		return nil, err
+	}
+
+	return rs, nil
 }

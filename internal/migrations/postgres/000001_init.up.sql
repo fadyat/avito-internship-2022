@@ -29,7 +29,7 @@ create table transactions
     foreign key (user_id) references user_wallets (user_id)
 );
 
-create type reservation_status as enum ('pending', 'approved', 'cancelled'); -- todo: rename to "released"
+create type reservation_status as enum ('pending', 'released', 'cancelled');
 
 create table reservations
 (

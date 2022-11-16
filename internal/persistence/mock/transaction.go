@@ -31,6 +31,10 @@ func (t *TransactionRepo) GetUserTransactions(_, _, _ uint64, _ []string) ([]*mo
 	return make([]*models.Transaction, 0), nil
 }
 
-func (t *TransactionRepo) GetUserTransactionsCount(userID uint64) (uint64, error) {
+func (t *TransactionRepo) GetUserTransactionsCount(_ uint64) (uint64, error) {
 	return 1, nil
+}
+
+func (t *TransactionRepo) GetReservationsReport(_ dto.ReportTime) ([]*models.ReservationReport, error) {
+	return make([]*models.ReservationReport, 0), nil
 }

@@ -38,7 +38,7 @@ type ReservationStatus string
 
 const (
 	Pending   ReservationStatus = "pending"
-	Released  ReservationStatus = "approved" // todo: rename to "released"
+	Released  ReservationStatus = "released"
 	Cancelled ReservationStatus = "cancelled"
 )
 
@@ -96,8 +96,4 @@ type ReservationReport struct {
 	// @description: Count is the count of all reservations from all users.
 	// @example:     100
 	Count uint64 `json:"count"`
-
-	// @description: Status is the status of the reservation.
-	// @example:     Pending
-	Status ReservationStatus `json:"status"`
 }
