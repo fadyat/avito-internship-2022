@@ -190,6 +190,15 @@ func TestTransactionService_GetReservationsReport(t *testing.T) {
 			errRes: &responses.ValidationErrResp{},
 			expRes: nil,
 		},
+		{
+			name: "month is gt 12",
+			res: dto.ReportTime{
+				Year:  2021,
+				Month: 13,
+			},
+			errRes: &responses.ValidationErrResp{},
+			expRes: nil,
+		},
 	}
 
 	for _, tt := range tests {

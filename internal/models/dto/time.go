@@ -10,5 +10,5 @@ type ReportTime struct {
 
 	// @description: Month is a month of the report.
 	// @example:     1
-	Month int `json:"month" validate:"required,gt=0,number"`
+	Month int `json:"month" validate:"required,gt=0,lte=12,number"`
 }

@@ -266,56 +266,6 @@ const docTemplate = `{
         },
         "/api/v1/transaction/reservation": {
             "post": {
-                "description": "Reservation of the user's balance from another service",
-                "tags": [
-                    "Transaction"
-                ],
-                "summary": "Reservation of the user's balance",
-                "parameters": [
-                    {
-                        "description": "Reservation info",
-                        "name": "body",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/dto.Reservation"
-                        }
-                    }
-                ],
-                "responses": {
-                    "201": {
-                        "description": "Created",
-                        "schema": {
-                            "$ref": "#/definitions/responses.TransactionCreated"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/responses.ErrorResp"
-                        }
-                    },
-                    "404": {
-                        "description": "Not Found",
-                        "schema": {
-                            "$ref": "#/definitions/responses.ErrorResp"
-                        }
-                    },
-                    "422": {
-                        "description": "Unprocessable Entity",
-                        "schema": {
-                            "$ref": "#/definitions/responses.ErrorResp"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/responses.ErrorResp"
-                        }
-                    }
-                }
-            },
-            "delete": {
                 "description": "Cancel reservation of the user's balance from another service",
                 "tags": [
                     "Transaction"
@@ -347,6 +297,46 @@ const docTemplate = `{
                     },
                     "404": {
                         "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/responses.ErrorResp"
+                        }
+                    },
+                    "422": {
+                        "description": "Unprocessable Entity",
+                        "schema": {
+                            "$ref": "#/definitions/responses.ErrorResp"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/responses.ErrorResp"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/transaction/reservation/report": {
+            "get": {
+                "description": "Get reservation report",
+                "tags": [
+                    "Transaction"
+                ],
+                "summary": "Get reservation report",
+                "parameters": [
+                    {
+                        "description": "Reservation report time",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.ReportTime"
+                        }
+                    }
+                ],
+                "responses": {
+                    "400": {
+                        "description": "Bad Request",
                         "schema": {
                             "$ref": "#/definitions/responses.ErrorResp"
                         }
@@ -630,6 +620,24 @@ const docTemplate = `{
                     "description": "@description: URL is a link to the implementation of the service.\n@example:     https://aboba-service.com",
                     "type": "string",
                     "maxLength": 255
+                }
+            }
+        },
+        "dto.ReportTime": {
+            "type": "object",
+            "required": [
+                "month",
+                "year"
+            ],
+            "properties": {
+                "month": {
+                    "description": "@description: Month is a month of the report.\n@example:     1",
+                    "type": "integer"
+                },
+                "year": {
+                    "description": "@description: Year is a year of the report.\n@example:     2021",
+                    "type": "integer",
+                    "minimum": 0
                 }
             }
         },

@@ -17,6 +17,23 @@ definitions:
     required:
     - name
     type: object
+  dto.ReportTime:
+    properties:
+      month:
+        description: |-
+          @description: Month is a month of the report.
+          @example:     1
+        type: integer
+      year:
+        description: |-
+          @description: Year is a year of the report.
+          @example:     2021
+        minimum: 0
+        type: integer
+    required:
+    - month
+    - year
+    type: object
   dto.Reservation:
     properties:
       amount:
@@ -445,7 +462,7 @@ paths:
       tags:
       - Transaction
   /api/v1/transaction/reservation:
-    delete:
+    post:
       description: Cancel reservation of the user's balance from another service
       parameters:
       - description: Reservation info
@@ -478,26 +495,19 @@ paths:
       summary: Cancel reservation of the user's balance
       tags:
       - Transaction
-    post:
-      description: Reservation of the user's balance from another service
+  /api/v1/transaction/reservation/report:
+    get:
+      description: Get reservation report
       parameters:
-      - description: Reservation info
+      - description: Reservation report time
         in: body
         name: body
         required: true
         schema:
-          $ref: '#/definitions/dto.Reservation'
+          $ref: '#/definitions/dto.ReportTime'
       responses:
-        "201":
-          description: Created
-          schema:
-            $ref: '#/definitions/responses.TransactionCreated'
         "400":
           description: Bad Request
-          schema:
-            $ref: '#/definitions/responses.ErrorResp'
-        "404":
-          description: Not Found
           schema:
             $ref: '#/definitions/responses.ErrorResp'
         "422":
@@ -508,7 +518,7 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/responses.ErrorResp'
-      summary: Reservation of the user's balance
+      summary: Get reservation report
       tags:
       - Transaction
   /api/v1/transaction/user/{id}:

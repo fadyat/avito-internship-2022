@@ -209,8 +209,8 @@ func (t *TransactionRepo) GetReservationsReport(tm dto.ReportTime) ([]*models.Re
 
 	rq := `SELECT service_id, order_id, SUM(amount) AS amount, COUNT(*) AS count
 		   FROM reservations
-		   WHERE date_trunc('year', created_at) = $1 AND
-		         date_trunc('month', created_at) = $2 AND
+		   WHERE extract(year from created_at) = $1 AND
+		         extract(month from created_at) = $2 AND
 		         status = $3
 		   GROUP BY service_id, order_id
 	`

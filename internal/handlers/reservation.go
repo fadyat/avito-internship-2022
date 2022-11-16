@@ -2,7 +2,6 @@ package handlers
 
 import (
 	"errors"
-	"github.com/fadyat/avito-internship-2022/internal/helpers"
 	"github.com/fadyat/avito-internship-2022/internal/models"
 	"github.com/fadyat/avito-internship-2022/internal/models/dto"
 	"github.com/fadyat/avito-internship-2022/internal/persistence"
@@ -133,7 +132,7 @@ func (h *TransactionHandler) createRelease(c *fiber.Ctx) error {
 
 // cancelReservation godoc
 // @tags        Transaction
-// @router      /api/v1/transaction/reservation [delete]
+// @router      /api/v1/transaction/reservation [post]
 // @summary     Cancel reservation of the user's balance
 // @description Cancel reservation of the user's balance from another service
 // @param       body body     dto.Reservation true "Reservation info"
@@ -191,68 +190,46 @@ func (h *TransactionHandler) cancelReservation(c *fiber.Ctx) error {
 	})
 }
 
-// getUserTransactions godoc
+// getReservationReport godoc
 // @tags        Transaction
-// @router      /api/v1/transaction/user/{id} [get]
-// @summary     Get user transactions
-// @description Get all user transactions in paginated form
-// @param       id       path     int    true  "User ID"     Format(uint64)
-// @param       page     query    int    false "Page number" default(1)
-// @param       per_page query    int    false "Page size"   default(10)
-// @param       order_by query    string false "Order by"    Enums(created_at, amount) default(created_at, amount)
-// @response    200      {object} responses.TransactionPaginated
-// @response    400      {object} responses.ErrorResp
-// @response    422      {object} responses.ErrorResp
-// @response    500      {object} responses.ErrorResp
-func (h *TransactionHandler) getUserTransactions(c *fiber.Ctx) error {
-	var pag models.Pagination
-	if err := c.QueryParser(&pag); err != nil {
-		h.l.Debug("failed to parse query", zap.Error(err))
-		return c.Status(fiber.StatusBadRequest).JSON(&responses.ErrorResp{
+// @router      /api/v1/transaction/reservation/report [get]
+// @summary     Get reservation report
+// @description Get reservation report
+// @param       body body     dto.ReportTime true "Reservation report time"
+// @response    400  {object} responses.ErrorResp
+// @response    422  {object} responses.ErrorResp
+// @response    500  {object} responses.ErrorResp
+func (h *TransactionHandler) getReservationReport(ctx *fiber.Ctx) error {
+	var body dto.ReportTime
+	if err := ctx.BodyParser(&body); err != nil {
+		h.l.Debug("failed to parse body", zap.Error(err))
+		return ctx.Status(fiber.StatusBadRequest).JSON(&responses.ErrorResp{
 			Message:     "Bad request",
 			Description: err.Error(),
 		})
 	}
-	helpers.MakePaginationParamsCorrect(&pag)
 
-	ts, err := h.s.GetUserTransactions(c.Params("id"), pag.Page, pag.PerPage, pag.OrderBy)
-	verr := &responses.ValidationErrResp{}
+	r, err := h.s.GetReservationsReport(body)
+	var verr *responses.ValidationErrResp
 	if errors.As(err, &verr) {
 		h.l.Debug("validation failed", zap.Error(err))
-		return c.Status(fiber.StatusUnprocessableEntity).JSON(&responses.ErrorResp{
-			Message:     "Validation error",
-			Description: err.Error(),
-		})
-	}
-
-	// fixme: it will be better to handle this error in service layer, but for rn it's ok
-	if errors.Is(err, persistence.ErrInvalidColumn) {
-		h.l.Debug("invalid column", zap.Error(err))
-		return c.Status(fiber.StatusUnprocessableEntity).JSON(&responses.ErrorResp{
+		return ctx.Status(fiber.StatusUnprocessableEntity).JSON(&responses.ErrorResp{
 			Message:     "Validation error",
 			Description: err.Error(),
 		})
 	}
 
 	if err != nil {
-		h.l.Error("failed to get user transactions", zap.Error(err))
-		return c.Status(fiber.StatusInternalServerError).JSON(&responses.ErrorResp{
+		h.l.Error("failed to get reservation report", zap.Error(err))
+		return ctx.Status(fiber.StatusInternalServerError).JSON(&responses.ErrorResp{
 			Message:     "Internal server error",
 			Description: err.Error(),
 		})
 	}
 
-	if ts == nil {
-		ts = make([]*models.Transaction, 0)
+	if r == nil {
+		r = make([]*models.ReservationReport, 0)
 	}
 
-	total, err := h.s.GetUserTransactionsCount(c.Params("id"))
-	if err != nil {
-		h.l.Error("failed to get user transactions count", zap.Error(err))
-	}
-
-	return c.Status(fiber.StatusOK).JSON(&responses.TransactionPaginated{
-		Transactions: ts,
-		Pagination:   responses.NewPagination(pag.PerPage, pag.Page, uint64(len(ts)), total),
-	})
+	return ctx.Status(fiber.StatusOK).JSON(r)
 }

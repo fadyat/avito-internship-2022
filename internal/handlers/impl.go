@@ -44,5 +44,6 @@ func InitRoutes(app *fiber.App, psql *pgx.Conn, log *zap.Logger, validate *valid
 	v1.Post("/transaction/reservation", th.createReservation)
 	v1.Post("/transaction/cancel", th.cancelReservation)
 	v1.Post("/transaction/release", th.createRelease)
+	v1.Get("/transaction/reservation/report", th.getReservationReport)
 	log.Debug("registered transaction handlers")
 }
