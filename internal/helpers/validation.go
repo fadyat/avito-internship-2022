@@ -14,7 +14,7 @@ func ValidateUint64(n, valTag string, v *validator.Validate) (uint64, error) {
 		return 0, &responses.ValidationErrResp{Message: fmt.Sprintf("failed to parse %s as uint64", n)}
 	}
 
-	if err := v.Var(n, valTag); err != nil {
+	if err := v.Var(number, valTag); err != nil {
 		return 0, &responses.ValidationErrResp{Message: err.Error()}
 	}
 
