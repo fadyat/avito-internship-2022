@@ -23,10 +23,10 @@ func (t *TransactionRepo) CreateReplenishment(tr dto.Transaction) (uint64, error
 
 func (t *TransactionRepo) createReplenishment(tr dto.Transaction) (uint64, error) {
 	tx, err := t.c.Begin(context.Background())
-	defer func() { _ = tx.Rollback(context.Background()) }()
 	if err != nil {
 		return 0, err
 	}
+	defer func() { _ = tx.Rollback(context.Background()) }()
 
 	if tr.Amount <= 0 {
 		return 0, persistence.ErrNegativeAmount
@@ -59,10 +59,10 @@ func (t *TransactionRepo) CreateWithdrawal(tr dto.Transaction) (uint64, error) {
 
 func (t *TransactionRepo) createWithdrawal(tr dto.Transaction) (uint64, error) {
 	tx, err := t.c.Begin(context.Background())
-	defer func() { _ = tx.Rollback(context.Background()) }()
 	if err != nil {
 		return 0, err
 	}
+	defer func() { _ = tx.Rollback(context.Background()) }()
 
 	if tr.Amount <= 0 {
 		return 0, persistence.ErrNegativeAmount

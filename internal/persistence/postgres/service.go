@@ -22,10 +22,10 @@ func (s *OuterServiceRepo) CreateService(os dto.OuterService) (uint64, error) {
 
 func (s *OuterServiceRepo) createService(os dto.OuterService) (uint64, error) {
 	tx, err := s.c.Begin(context.Background())
-	defer func() { _ = tx.Rollback(context.Background()) }()
 	if err != nil {
 		return 0, err
 	}
+	defer func() { _ = tx.Rollback(context.Background()) }()
 
 	var id uint64
 	q := "INSERT INTO services (name, url) VALUES ($1, $2) RETURNING id"
@@ -48,10 +48,10 @@ func (s *OuterServiceRepo) GetServiceByID(id uint64) (*models.OuterService, erro
 
 func (s *OuterServiceRepo) getServiceByID(id uint64) (*models.OuterService, error) {
 	tx, err := s.c.Begin(context.Background())
-	defer func() { _ = tx.Rollback(context.Background()) }()
 	if err != nil {
 		return nil, err
 	}
+	defer func() { _ = tx.Rollback(context.Background()) }()
 
 	var os models.OuterService
 	q := "SELECT * FROM services WHERE id = $1 LIMIT 1"
@@ -74,10 +74,10 @@ func (s *OuterServiceRepo) GetAllServices() ([]*models.OuterService, error) {
 
 func (s *OuterServiceRepo) getAllServices() ([]*models.OuterService, error) {
 	tx, err := s.c.Begin(context.Background())
-	defer func() { _ = tx.Rollback(context.Background()) }()
 	if err != nil {
 		return nil, err
 	}
+	defer func() { _ = tx.Rollback(context.Background()) }()
 
 	q := "SELECT * FROM services"
 	rows, err := tx.Query(context.Background(), q)

@@ -16,10 +16,10 @@ func (t *TransactionRepo) CreateReservation(tr dto.Reservation) (uint64, error) 
 
 func (t *TransactionRepo) createReservation(tr dto.Reservation) (uint64, error) {
 	tx, err := t.c.Begin(context.Background())
-	defer func() { _ = tx.Rollback(context.Background()) }()
 	if err != nil {
 		return 0, err
 	}
+	defer func() { _ = tx.Rollback(context.Background()) }()
 
 	// extra validation if validation is not done on the service level
 	if tr.Amount <= 0 {
@@ -49,10 +49,10 @@ func (t *TransactionRepo) CreateRelease(tr dto.Reservation) (uint64, error) {
 
 func (t *TransactionRepo) createRelease(tr dto.Reservation) (uint64, error) {
 	tx, err := t.c.Begin(context.Background())
-	defer func() { _ = tx.Rollback(context.Background()) }()
 	if err != nil {
 		return 0, err
 	}
+	defer func() { _ = tx.Rollback(context.Background()) }()
 
 	var balance uint64
 	b := `SELECT balance FROM user_wallets WHERE user_id = $1`
@@ -109,10 +109,10 @@ func (t *TransactionRepo) CancelReservation(tr dto.Reservation) (uint64, error) 
 
 func (t *TransactionRepo) cancelReservation(tr dto.Reservation) (uint64, error) {
 	tx, err := t.c.Begin(context.Background())
-	defer func() { _ = tx.Rollback(context.Background()) }()
 	if err != nil {
 		return 0, err
 	}
+	defer func() { _ = tx.Rollback(context.Background()) }()
 
 	rq := `UPDATE reservations SET status = $1, updated_at = NOW()
            WHERE id = (
@@ -146,10 +146,10 @@ func (t *TransactionRepo) GetUserTransactions(userID, page, perPage uint64, orde
 
 func (t *TransactionRepo) getUserTransactions(userID, page, perPage uint64, orderBy []string) ([]*models.Transaction, error) {
 	tx, err := t.c.Begin(context.Background())
-	defer func() { _ = tx.Rollback(context.Background()) }()
 	if err != nil {
 		return nil, err
 	}
+	defer func() { _ = tx.Rollback(context.Background()) }()
 
 	q := fmt.Sprintf(
 		"SELECT * FROM transactions WHERE user_id = $1 ORDER BY %s LIMIT $2 OFFSET $3",
@@ -181,10 +181,10 @@ func (t *TransactionRepo) GetUserTransactionsCount(userID uint64) (uint64, error
 
 func (t *TransactionRepo) getUserTransactionsCount(userID uint64) (uint64, error) {
 	tx, err := t.c.Begin(context.Background())
-	defer func() { _ = tx.Rollback(context.Background()) }()
 	if err != nil {
 		return 0, err
 	}
+	defer func() { _ = tx.Rollback(context.Background()) }()
 
 	q := `SELECT COUNT(*) FROM transactions WHERE user_id = $1`
 	var cnt uint64
@@ -201,11 +201,16 @@ func (t *TransactionRepo) getUserTransactionsCount(userID uint64) (uint64, error
 }
 
 func (t *TransactionRepo) GetReservationsReport(tm dto.ReportTime) ([]*models.ReservationReport, error) {
+	rs, err := t.getReservationsReport(tm)
+	return rs, recastError(err)
+}
+
+func (t *TransactionRepo) getReservationsReport(tm dto.ReportTime) ([]*models.ReservationReport, error) {
 	tx, err := t.c.Begin(context.Background())
-	defer func() { _ = tx.Rollback(context.Background()) }()
 	if err != nil {
 		return nil, err
 	}
+	defer func() { _ = tx.Rollback(context.Background()) }()
 
 	rq := `SELECT service_id, order_id, SUM(amount) AS amount, COUNT(*) AS count
 		   FROM reservations

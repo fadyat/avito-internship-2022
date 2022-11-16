@@ -22,10 +22,10 @@ func (u *UserWalletRepo) CreateUserWallet(w dto.UserWallet) (uint64, error) {
 
 func (u *UserWalletRepo) createUserWallet(w dto.UserWallet) (uint64, error) {
 	tx, err := u.c.Begin(context.Background())
-	defer func() { _ = tx.Rollback(context.Background()) }()
 	if err != nil {
 		return 0, err
 	}
+	defer func() { _ = tx.Rollback(context.Background()) }()
 
 	var id uint64
 	q := "INSERT INTO user_wallets (user_id, balance) VALUES ($1, $2) RETURNING user_id"
@@ -48,10 +48,10 @@ func (u *UserWalletRepo) GetUserWalletByID(id uint64) (*models.UserWallet, error
 
 func (u *UserWalletRepo) getUserWalletByID(id uint64) (*models.UserWallet, error) {
 	tx, err := u.c.Begin(context.Background())
-	defer func() { _ = tx.Rollback(context.Background()) }()
 	if err != nil {
 		return nil, err
 	}
+	defer func() { _ = tx.Rollback(context.Background()) }()
 
 	var w models.UserWallet
 	q := "SELECT * FROM user_wallets WHERE user_id = $1 LIMIT 1"
@@ -70,10 +70,10 @@ func (u *UserWalletRepo) GetAllWallets() ([]*models.UserWallet, error) {
 
 func (u *UserWalletRepo) getAllWallets() ([]*models.UserWallet, error) {
 	tx, err := u.c.Begin(context.Background())
-	defer func() { _ = tx.Rollback(context.Background()) }()
 	if err != nil {
 		return nil, err
 	}
+	defer func() { _ = tx.Rollback(context.Background()) }()
 
 	var ws []*models.UserWallet
 	q := "SELECT * FROM user_wallets"
