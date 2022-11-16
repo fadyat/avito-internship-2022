@@ -110,6 +110,14 @@ func (h *TransactionHandler) createRelease(c *fiber.Ctx) error {
 		})
 	}
 
+	if errors.Is(err, persistence.ErrNotFound) {
+		h.l.Debug("reservation not found", zap.Error(err))
+		return c.Status(fiber.StatusNotFound).JSON(&responses.ErrorResp{
+			Message:     "Reservation not found",
+			Description: err.Error(),
+		})
+	}
+
 	if err != nil {
 		h.l.Error("failed to create release", zap.Error(err))
 		return c.Status(fiber.StatusInternalServerError).JSON(&responses.ErrorResp{

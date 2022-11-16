@@ -54,17 +54,34 @@ func (t *TransactionRepo) createRelease(tr dto.Reservation) (uint64, error) {
 		return 0, err
 	}
 
-	if _, err = t.CreateWithdrawal(dto.Transaction{
-		UserID: tr.UserID,
-		Amount: tr.Amount,
-	}); err != nil {
+	var balance uint64
+	b := `SELECT balance FROM user_wallets WHERE user_id = $1`
+	err = tx.QueryRow(context.Background(), b, tr.UserID).Scan(&balance)
+	if err != nil {
 		return 0, err
 	}
 
-	rq := `UPDATE reservations SET status = $1
+	if balance < tr.Amount {
+		return 0, persistence.ErrInsufficientFunds
+	}
+
+	wq := `UPDATE user_wallets SET balance = balance - $1 WHERE user_id = $2`
+	_, err = tx.Exec(context.Background(), wq, tr.Amount, tr.UserID)
+	if err != nil {
+		return 0, err
+	}
+
+	tq := `INSERT INTO transactions (user_id, amount, type) VALUES ($1, $2, $3)`
+	_, err = tx.Exec(context.Background(), tq, tr.UserID, tr.Amount, models.Withdrawal)
+	if err != nil {
+		return 0, err
+	}
+
+	rq := `UPDATE reservations SET status = $1, updated_at = NOW()
            WHERE id = (
                SELECT id FROM reservations
            	   WHERE user_id = $2 AND service_id = $3 AND order_id = $4 AND amount = $5 AND status = $6
+           	   ORDER BY created_at
            	   LIMIT 1
            )
            RETURNING id
@@ -97,10 +114,11 @@ func (t *TransactionRepo) cancelReservation(tr dto.Reservation) (uint64, error) 
 		return 0, err
 	}
 
-	rq := `UPDATE reservations SET status = $1
+	rq := `UPDATE reservations SET status = $1, updated_at = NOW()
            WHERE id = (
                SELECT id FROM reservations
 			   WHERE user_id = $2 AND service_id = $3 AND order_id = $4 AND amount = $5 AND status = $6
+			   ORDER BY created_at
 			   LIMIT 1
            )
 		   RETURNING id
@@ -108,7 +126,7 @@ func (t *TransactionRepo) cancelReservation(tr dto.Reservation) (uint64, error) 
 
 	var id uint64
 	err = tx.QueryRow(
-		context.Background(), rq, models.Canceled, tr.UserID, tr.ServiceID, tr.OrderID, tr.Amount, models.Pending,
+		context.Background(), rq, models.Cancelled, tr.UserID, tr.ServiceID, tr.OrderID, tr.Amount, models.Pending,
 	).Scan(&id)
 	if err != nil {
 		return 0, err
@@ -180,4 +198,9 @@ func (t *TransactionRepo) getUserTransactionsCount(userID uint64) (uint64, error
 	}
 
 	return cnt, nil
+}
+
+func (t *TransactionRepo) GetReservationsReport(tm dto.ReportTime) ([]*models.ReservationReport, error) {
+	//TODO implement me
+	panic("implement me")
 }

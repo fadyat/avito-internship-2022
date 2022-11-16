@@ -37,9 +37,9 @@ type Transaction struct {
 type ReservationStatus string
 
 const (
-	Pending  ReservationStatus = "pending"
-	Released ReservationStatus = "approved" // TODO: rename to "released"
-	Canceled ReservationStatus = "rejected" // TODO: rename to canceled
+	Pending   ReservationStatus = "pending"
+	Released  ReservationStatus = "approved" // todo: rename to "released"
+	Cancelled ReservationStatus = "cancelled"
 )
 
 type Reservation struct {
@@ -63,6 +63,39 @@ type Reservation struct {
 	// @description: Amount is the amount of money, that was transferred.
 	// @example:     100
 	Amount uint64 `json:"amount"`
+
+	// @description: Status is the status of the reservation.
+	// @example:     Pending
+	Status ReservationStatus `json:"status"`
+
+	// @description: CreatedAt is the time, when the reservation was created.
+	// @example:     2021-01-01T00:00:00Z
+	CreatedAt time.Time `json:"created_at"`
+
+	// @description: UpdatedAt is the time, when the reservation was updated.
+	// @example:     2021-01-01T00:00:00Z
+	UpdatedAt time.Time `json:"updated_at"`
+}
+
+// ReservationReport is a report about the reservation.
+// @description: ReservationReport is a report about the reservation
+type ReservationReport struct {
+
+	// @description: ServiceID is a unique identifier of the service, that made this reservation.
+	// @example:     1
+	ServiceID uint64 `json:"service_id"`
+
+	// @description: OrderID is a unique identifier of the order, that belongs to the service.
+	// @example:     1
+	OrderID uint64 `json:"order_id"`
+
+	// @description: Amount is the sum of all accepted reservations from all users.
+	// @example:     100
+	Amount uint64 `json:"amount"`
+
+	// @description: Count is the count of all reservations from all users.
+	// @example:     100
+	Count uint64 `json:"count"`
 
 	// @description: Status is the status of the reservation.
 	// @example:     Pending
