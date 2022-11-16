@@ -40,3 +40,6 @@ migrations-down:
 	migrate -path ./internal/migrations/postgres \
 		-database "postgres://postgres:postgres@localhost:5432/postgres?sslmode=disable" \
 		down
+
+test:
+	 go test ./... -cover

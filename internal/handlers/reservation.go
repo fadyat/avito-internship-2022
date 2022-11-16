@@ -1,11 +1,14 @@
 package handlers
 
 import (
+	"encoding/csv"
 	"errors"
+	"fmt"
 	"github.com/fadyat/avito-internship-2022/internal/models"
 	"github.com/fadyat/avito-internship-2022/internal/models/dto"
 	"github.com/fadyat/avito-internship-2022/internal/persistence"
 	"github.com/fadyat/avito-internship-2022/internal/responses"
+	"github.com/gocarina/gocsv"
 	"github.com/gofiber/fiber/v2"
 	"go.uber.org/zap"
 )
@@ -195,10 +198,12 @@ func (h *TransactionHandler) cancelReservation(c *fiber.Ctx) error {
 // @router      /api/v1/transaction/reservation/report [get]
 // @summary     Get reservation report
 // @description Get reservation report
-// @param       body body     dto.ReportTime true "Reservation report time"
-// @response    400  {object} responses.ErrorResp
-// @response    422  {object} responses.ErrorResp
-// @response    500  {object} responses.ErrorResp
+// @produce     json,text/csv
+// @param       body   body     dto.ReportTime true  "Reservation report time"
+// @param       format query    string         false "Report format" Enums(csv, json)
+// @response    400    {object} responses.ErrorResp
+// @response    422    {object} responses.ErrorResp
+// @response    500    {object} responses.ErrorResp
 func (h *TransactionHandler) getReservationReport(ctx *fiber.Ctx) error {
 	var body dto.ReportTime
 	if err := ctx.BodyParser(&body); err != nil {
@@ -227,8 +232,34 @@ func (h *TransactionHandler) getReservationReport(ctx *fiber.Ctx) error {
 		})
 	}
 
+	format := ctx.Query("format", "csv")
 	if r == nil {
 		r = make([]*models.ReservationReport, 0)
+	}
+
+	if format == "csv" {
+		filename := fmt.Sprintf("reservation_report_%d-%d.csv", body.Year, body.Month)
+		ctx.Set("Content-Disposition", fmt.Sprintf("attachment; filename=%s", filename))
+		ctx.Set("Content-Type", "text/csv")
+		w := csv.NewWriter(ctx)
+		if err := gocsv.MarshalCSV(r, w); err != nil {
+			h.l.Error("failed to marshal csv", zap.Error(err))
+			return ctx.Status(fiber.StatusInternalServerError).JSON(&responses.ErrorResp{
+				Message:     "Internal server error",
+				Description: err.Error(),
+			})
+		}
+
+		w.Flush()
+		if err := w.Error(); err != nil {
+			h.l.Error("failed to flush csv", zap.Error(err))
+			return ctx.Status(fiber.StatusInternalServerError).JSON(&responses.ErrorResp{
+				Message:     "Internal server error",
+				Description: err.Error(),
+			})
+		}
+
+		return nil
 	}
 
 	return ctx.Status(fiber.StatusOK).JSON(r)

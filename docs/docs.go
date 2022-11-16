@@ -319,6 +319,10 @@ const docTemplate = `{
         "/api/v1/transaction/reservation/report": {
             "get": {
                 "description": "Get reservation report",
+                "produces": [
+                    "application/json",
+                    "text/csv"
+                ],
                 "tags": [
                     "Transaction"
                 ],
@@ -332,6 +336,16 @@ const docTemplate = `{
                         "schema": {
                             "$ref": "#/definitions/dto.ReportTime"
                         }
+                    },
+                    {
+                        "enum": [
+                            "csv",
+                            "json"
+                        ],
+                        "type": "string",
+                        "description": "Report format",
+                        "name": "format",
+                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -632,7 +646,8 @@ const docTemplate = `{
             "properties": {
                 "month": {
                     "description": "@description: Month is a month of the report.\n@example:     1",
-                    "type": "integer"
+                    "type": "integer",
+                    "maximum": 12
                 },
                 "year": {
                     "description": "@description: Year is a year of the report.\n@example:     2021",

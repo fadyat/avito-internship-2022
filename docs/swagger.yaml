@@ -23,6 +23,7 @@ definitions:
         description: |-
           @description: Month is a month of the report.
           @example:     1
+        maximum: 12
         type: integer
       year:
         description: |-
@@ -505,6 +506,16 @@ paths:
         required: true
         schema:
           $ref: '#/definitions/dto.ReportTime'
+      - description: Report format
+        enum:
+        - csv
+        - json
+        in: query
+        name: format
+        type: string
+      produces:
+      - application/json
+      - text/csv
       responses:
         "400":
           description: Bad Request
