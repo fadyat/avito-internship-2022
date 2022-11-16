@@ -36,6 +36,12 @@ func TestUserWalletService_CreateUserWallet(t *testing.T) {
 			expErr: &responses.ValidationErrResp{},
 			expRes: 0,
 		},
+		{
+			name:   "missing user_id",
+			wallet: dto.UserWallet{},
+			expErr: &responses.ValidationErrResp{},
+			expRes: 0,
+		},
 	}
 
 	for _, tt := range tests {
