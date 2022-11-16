@@ -6,11 +6,12 @@ import (
 	_ "github.com/fadyat/avito-internship-2022/docs"
 	"github.com/fadyat/avito-internship-2022/internal/config"
 	"github.com/fadyat/avito-internship-2022/internal/handlers"
+	"github.com/fadyat/avito-internship-2022/internal/middleware"
 	"github.com/go-playground/validator/v10"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
-	"github.com/gofiber/fiber/v2/middleware/logger"
 	"github.com/gofiber/fiber/v2/middleware/recover"
+	"github.com/gofiber/fiber/v2/middleware/requestid"
 	"github.com/jackc/pgx/v5"
 	"github.com/joho/godotenv"
 	"github.com/kelseyhightower/envconfig"
@@ -51,8 +52,11 @@ func main() {
 	}
 	logs.Debug("db initialized")
 
-	app := initApp()
+	app := initApp(logs)
+	logs.Debug("app initialized")
+
 	handlers.InitRoutes(app, psql, logs, validate)
+	logs.Debug("routes initialized")
 
 	err = app.Listen(":" + cfg.HTTPPort)
 	defer func() {
@@ -105,7 +109,7 @@ func initLogger() *zap.Logger {
 	return logs
 }
 
-func initApp() *fiber.App {
+func initApp(l *zap.Logger) *fiber.App {
 	app := fiber.New(fiber.Config{
 		ReadTimeout:  5 * time.Second,
 		WriteTimeout: 5 * time.Second,
@@ -114,10 +118,9 @@ func initApp() *fiber.App {
 
 	app.Use(cors.New())
 	app.Use(recover.New())
+	app.Use(requestid.New())
 
-	app.Use(logger.New(logger.Config{
-		Format: "${time} ${status} - ${latency} ${method} ${path}\n",
-	}))
+	app.Use(middleware.IncludeLogs(l))
 
 	app.Get("/swagger/*", swagger.New(swagger.Config{
 		URL:         "/swagger/doc.json",
