@@ -20,7 +20,6 @@
 
 > Принимает `user_id`, `service_id`, `order_id`, `amount`.
 
-
 - Метод получения баланса пользователя.
 
 > Принимает `user_id`.
@@ -42,3 +41,10 @@
 > На выходе: список транзакций.
 >
 > Добавить сортировку по дате и сумме.
+
+### Awaiting
+
+- repo tests
+- handler tests
+- docs
+- code refactoring?
