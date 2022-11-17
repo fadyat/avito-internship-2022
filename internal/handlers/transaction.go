@@ -45,7 +45,7 @@ func (h *TransactionHandler) createReplenishment(c *fiber.Ctx) error {
 		})
 	}
 
-	id, err := h.s.CreateReplenishment(body)
+	id, err := h.s.CreateReplenishment(&body)
 	var verr *responses.ValidationErrResp
 	if errors.As(err, &verr) {
 		h.l.Debug("validation failed", zap.Error(err))
@@ -98,7 +98,7 @@ func (h *TransactionHandler) createWithdrawal(c *fiber.Ctx) error {
 		})
 	}
 
-	id, err := h.s.CreateWithdrawal(body)
+	id, err := h.s.CreateWithdrawal(&body)
 	var verr *responses.ValidationErrResp
 	if errors.As(err, &verr) {
 		h.l.Debug("validation failed", zap.Error(err))

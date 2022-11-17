@@ -6,12 +6,12 @@ import (
 	"github.com/fadyat/avito-internship-2022/internal/persistence"
 )
 
-func (t *TransactionRepo) CreateReservation(tr dto.Reservation) (uint64, error) {
+func (t *TransactionRepo) CreateReservation(tr *dto.Reservation) (uint64, error) {
 	id, err := t.createReservation(tr)
 	return id, recastError(err)
 }
 
-func (t *TransactionRepo) createReservation(tr dto.Reservation) (uint64, error) {
+func (t *TransactionRepo) createReservation(tr *dto.Reservation) (uint64, error) {
 	tx, err := t.c.Begin()
 	if err != nil {
 		return 0, err
@@ -39,12 +39,12 @@ func (t *TransactionRepo) createReservation(tr dto.Reservation) (uint64, error) 
 	return id, nil
 }
 
-func (t *TransactionRepo) CreateRelease(tr dto.Reservation) (uint64, error) {
+func (t *TransactionRepo) CreateRelease(tr *dto.Reservation) (uint64, error) {
 	id, err := t.createRelease(tr)
 	return id, recastError(err)
 }
 
-func (t *TransactionRepo) createRelease(tr dto.Reservation) (uint64, error) {
+func (t *TransactionRepo) createRelease(tr *dto.Reservation) (uint64, error) {
 	tx, err := t.c.Begin()
 	if err != nil {
 		return 0, err
@@ -99,12 +99,12 @@ func (t *TransactionRepo) createRelease(tr dto.Reservation) (uint64, error) {
 	return id, nil
 }
 
-func (t *TransactionRepo) CancelReservation(tr dto.Reservation) (uint64, error) {
+func (t *TransactionRepo) CancelReservation(tr *dto.Reservation) (uint64, error) {
 	id, err := t.cancelReservation(tr)
 	return id, recastError(err)
 }
 
-func (t *TransactionRepo) cancelReservation(tr dto.Reservation) (uint64, error) {
+func (t *TransactionRepo) cancelReservation(tr *dto.Reservation) (uint64, error) {
 	tx, err := t.c.Begin()
 	if err != nil {
 		return 0, err
@@ -136,12 +136,12 @@ func (t *TransactionRepo) cancelReservation(tr dto.Reservation) (uint64, error) 
 	return id, nil
 }
 
-func (t *TransactionRepo) GetReservationsReport(tm dto.ReportTime) ([]*models.ReservationReport, error) {
+func (t *TransactionRepo) GetReservationsReport(tm *dto.ReportTime) ([]*models.ReservationReport, error) {
 	rs, err := t.getReservationsReport(tm)
 	return rs, recastError(err)
 }
 
-func (t *TransactionRepo) getReservationsReport(tm dto.ReportTime) ([]*models.ReservationReport, error) {
+func (t *TransactionRepo) getReservationsReport(tm *dto.ReportTime) ([]*models.ReservationReport, error) {
 	tx, err := t.c.Begin()
 	if err != nil {
 		return nil, err

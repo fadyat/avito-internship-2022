@@ -7,23 +7,23 @@ import (
 
 type TransactionRepo struct{}
 
-func (t *TransactionRepo) CreateReplenishment(_ dto.Transaction) (uint64, error) {
+func (t *TransactionRepo) CreateReplenishment(_ *dto.Transaction) (uint64, error) {
 	return 1, nil
 }
 
-func (t *TransactionRepo) CreateWithdrawal(_ dto.Transaction) (uint64, error) {
+func (t *TransactionRepo) CreateWithdrawal(_ *dto.Transaction) (uint64, error) {
 	return 1, nil
 }
 
-func (t *TransactionRepo) CreateReservation(_ dto.Reservation) (uint64, error) {
+func (t *TransactionRepo) CreateReservation(_ *dto.Reservation) (uint64, error) {
 	return 1, nil
 }
 
-func (t *TransactionRepo) CreateRelease(_ dto.Reservation) (uint64, error) {
+func (t *TransactionRepo) CreateRelease(_ *dto.Reservation) (uint64, error) {
 	return 1, nil
 }
 
-func (t *TransactionRepo) CancelReservation(_ dto.Reservation) (uint64, error) {
+func (t *TransactionRepo) CancelReservation(_ *dto.Reservation) (uint64, error) {
 	return 1, nil
 }
 
@@ -35,6 +35,6 @@ func (t *TransactionRepo) GetUserTransactionsCount(_ uint64) (uint64, error) {
 	return 1, nil
 }
 
-func (t *TransactionRepo) GetReservationsReport(_ dto.ReportTime) ([]*models.ReservationReport, error) {
+func (t *TransactionRepo) GetReservationsReport(_ *dto.ReportTime) ([]*models.ReservationReport, error) {
 	return make([]*models.ReservationReport, 0), nil
 }

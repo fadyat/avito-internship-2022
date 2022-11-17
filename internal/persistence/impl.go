@@ -26,18 +26,18 @@ type IUserWalletRepo interface {
 }
 
 type ITransactionRepo interface {
-	CreateReplenishment(tr dto.Transaction) (uint64, error)
-	CreateWithdrawal(tr dto.Transaction) (uint64, error)
+	CreateReplenishment(tr *dto.Transaction) (uint64, error)
+	CreateWithdrawal(tr *dto.Transaction) (uint64, error)
 	GetUserTransactions(userID, page, perPage uint64, orderBy []string) ([]*models.Transaction, error)
 	GetUserTransactionsCount(userID uint64) (uint64, error)
 	iReservationRepo
 }
 
 type iReservationRepo interface {
-	CreateReservation(tr dto.Reservation) (uint64, error)
-	CreateRelease(tr dto.Reservation) (uint64, error)
-	CancelReservation(tr dto.Reservation) (uint64, error)
-	GetReservationsReport(tm dto.ReportTime) ([]*models.ReservationReport, error)
+	CreateReservation(tr *dto.Reservation) (uint64, error)
+	CreateRelease(tr *dto.Reservation) (uint64, error)
+	CancelReservation(tr *dto.Reservation) (uint64, error)
+	GetReservationsReport(tm *dto.ReportTime) ([]*models.ReservationReport, error)
 }
 
 type IOuterServiceRepo interface {

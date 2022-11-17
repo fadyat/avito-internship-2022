@@ -34,7 +34,7 @@ func (h *TransactionHandler) createReservation(c *fiber.Ctx) error {
 		})
 	}
 
-	id, err := h.s.CreateReservation(body)
+	id, err := h.s.CreateReservation(&body)
 	var verr *responses.ValidationErrResp
 	if errors.As(err, &verr) {
 		h.l.Debug("validation failed", zap.Error(err))
@@ -86,7 +86,7 @@ func (h *TransactionHandler) createRelease(c *fiber.Ctx) error {
 		})
 	}
 
-	id, err := h.s.CreateRelease(body)
+	id, err := h.s.CreateRelease(&body)
 	var verr *responses.ValidationErrResp
 	if errors.As(err, &verr) {
 		h.l.Debug("validation failed", zap.Error(err))
@@ -154,7 +154,7 @@ func (h *TransactionHandler) cancelReservation(c *fiber.Ctx) error {
 		})
 	}
 
-	id, err := h.s.CancelReservation(body)
+	id, err := h.s.CancelReservation(&body)
 	var verr *responses.ValidationErrResp
 	if errors.As(err, &verr) {
 		h.l.Debug("validation failed", zap.Error(err))
@@ -214,7 +214,7 @@ func (h *TransactionHandler) getReservationReport(ctx *fiber.Ctx) error {
 		})
 	}
 
-	r, err := h.s.GetReservationsReport(body)
+	r, err := h.s.GetReservationsReport(&body)
 	var verr *responses.ValidationErrResp
 	if errors.As(err, &verr) {
 		h.l.Debug("validation failed", zap.Error(err))

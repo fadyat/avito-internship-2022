@@ -17,12 +17,12 @@ func NewTransactionRepo(c *sqlx.DB) *TransactionRepo {
 	return &TransactionRepo{c: c}
 }
 
-func (t *TransactionRepo) CreateReplenishment(tr dto.Transaction) (uint64, error) {
+func (t *TransactionRepo) CreateReplenishment(tr *dto.Transaction) (uint64, error) {
 	id, err := t.createReplenishment(tr)
 	return id, recastError(err)
 }
 
-func (t *TransactionRepo) createReplenishment(tr dto.Transaction) (uint64, error) {
+func (t *TransactionRepo) createReplenishment(tr *dto.Transaction) (uint64, error) {
 	tx, err := t.c.Begin()
 	if err != nil {
 		return 0, err
@@ -53,12 +53,12 @@ func (t *TransactionRepo) createReplenishment(tr dto.Transaction) (uint64, error
 	return id, nil
 }
 
-func (t *TransactionRepo) CreateWithdrawal(tr dto.Transaction) (uint64, error) {
+func (t *TransactionRepo) CreateWithdrawal(tr *dto.Transaction) (uint64, error) {
 	id, err := t.createWithdrawal(tr)
 	return id, recastError(err)
 }
 
-func (t *TransactionRepo) createWithdrawal(tr dto.Transaction) (uint64, error) {
+func (t *TransactionRepo) createWithdrawal(tr *dto.Transaction) (uint64, error) {
 	tx, err := t.c.Begin()
 	if err != nil {
 		return 0, err

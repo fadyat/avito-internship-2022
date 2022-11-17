@@ -6,7 +6,7 @@ import (
 	"github.com/fadyat/avito-internship-2022/internal/responses"
 )
 
-func (s *TransactionService) CreateReservation(tr dto.Reservation) (uint64, error) {
+func (s *TransactionService) CreateReservation(tr *dto.Reservation) (uint64, error) {
 	if err := s.v.Struct(tr); err != nil {
 		return 0, &responses.ValidationErrResp{Message: err.Error()}
 	}
@@ -14,7 +14,7 @@ func (s *TransactionService) CreateReservation(tr dto.Reservation) (uint64, erro
 	return s.r.CreateReservation(tr)
 }
 
-func (s *TransactionService) CreateRelease(tr dto.Reservation) (uint64, error) {
+func (s *TransactionService) CreateRelease(tr *dto.Reservation) (uint64, error) {
 	if err := s.v.Struct(tr); err != nil {
 		return 0, &responses.ValidationErrResp{Message: err.Error()}
 	}
@@ -22,7 +22,7 @@ func (s *TransactionService) CreateRelease(tr dto.Reservation) (uint64, error) {
 	return s.r.CreateRelease(tr)
 }
 
-func (s *TransactionService) CancelReservation(tr dto.Reservation) (uint64, error) {
+func (s *TransactionService) CancelReservation(tr *dto.Reservation) (uint64, error) {
 	if err := s.v.Struct(tr); err != nil {
 		return 0, &responses.ValidationErrResp{Message: err.Error()}
 	}
@@ -30,7 +30,7 @@ func (s *TransactionService) CancelReservation(tr dto.Reservation) (uint64, erro
 	return s.r.CancelReservation(tr)
 }
 
-func (s *TransactionService) GetReservationsReport(tm dto.ReportTime) ([]*models.ReservationReport, error) {
+func (s *TransactionService) GetReservationsReport(tm *dto.ReportTime) ([]*models.ReservationReport, error) {
 	if err := s.v.Struct(tm); err != nil {
 		return nil, &responses.ValidationErrResp{Message: err.Error()}
 	}

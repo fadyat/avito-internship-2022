@@ -11,7 +11,7 @@ import (
 
 type testCreateReservation struct {
 	name   string
-	res    dto.Reservation
+	res    *dto.Reservation
 	errRes error
 	expRes uint64
 }
@@ -19,7 +19,7 @@ type testCreateReservation struct {
 var reservationTests = []testCreateReservation{
 	{
 		name: "user_id is lt 1",
-		res: dto.Reservation{
+		res: &dto.Reservation{
 			UserID:    0,
 			Amount:    1,
 			ServiceID: 1,
@@ -30,7 +30,7 @@ var reservationTests = []testCreateReservation{
 	},
 	{
 		name: "amount is lt 1",
-		res: dto.Reservation{
+		res: &dto.Reservation{
 			UserID:    1,
 			Amount:    0,
 			ServiceID: 1,
@@ -41,7 +41,7 @@ var reservationTests = []testCreateReservation{
 	},
 	{
 		name: "service_id is lt 1",
-		res: dto.Reservation{
+		res: &dto.Reservation{
 			UserID:    1,
 			Amount:    1,
 			ServiceID: 0,
@@ -52,7 +52,7 @@ var reservationTests = []testCreateReservation{
 	},
 	{
 		name: "order_id is lt 1",
-		res: dto.Reservation{
+		res: &dto.Reservation{
 			UserID:    1,
 			Amount:    1,
 			ServiceID: 1,
@@ -63,7 +63,7 @@ var reservationTests = []testCreateReservation{
 	},
 	{
 		name: "amount is gt 1000000",
-		res: dto.Reservation{
+		res: &dto.Reservation{
 			UserID:    1,
 			Amount:    1000001,
 			ServiceID: 1,
@@ -74,7 +74,7 @@ var reservationTests = []testCreateReservation{
 	},
 	{
 		name: "missing user_id",
-		res: dto.Reservation{
+		res: &dto.Reservation{
 			Amount:    1,
 			ServiceID: 1,
 			OrderID:   1,
@@ -84,7 +84,7 @@ var reservationTests = []testCreateReservation{
 	},
 	{
 		name: "missing amount",
-		res: dto.Reservation{
+		res: &dto.Reservation{
 			UserID:    1,
 			ServiceID: 1,
 			OrderID:   1,
@@ -94,7 +94,7 @@ var reservationTests = []testCreateReservation{
 	},
 	{
 		name: "missing service_id",
-		res: dto.Reservation{
+		res: &dto.Reservation{
 			UserID:  1,
 			Amount:  1,
 			OrderID: 1,
@@ -103,7 +103,7 @@ var reservationTests = []testCreateReservation{
 	},
 	{
 		name: "missing order_id",
-		res: dto.Reservation{
+		res: &dto.Reservation{
 			UserID:    1,
 			Amount:    1,
 			ServiceID: 1,
@@ -113,7 +113,7 @@ var reservationTests = []testCreateReservation{
 	},
 	{
 		name: "no errors",
-		res: dto.Reservation{
+		res: &dto.Reservation{
 			UserID:    1,
 			Amount:    1,
 			ServiceID: 1,
@@ -156,7 +156,7 @@ func TestTransactionService_CancelReservation(t *testing.T) {
 
 type testReservationReport struct {
 	name   string
-	res    dto.ReportTime
+	res    *dto.ReportTime
 	errRes error
 	expRes []*models.ReservationReport
 }
@@ -165,7 +165,7 @@ func TestTransactionService_GetReservationsReport(t *testing.T) {
 	var tests = []testReservationReport{
 		{
 			name: "no errors",
-			res: dto.ReportTime{
+			res: &dto.ReportTime{
 				Year:  2021,
 				Month: 1,
 			},
@@ -174,7 +174,7 @@ func TestTransactionService_GetReservationsReport(t *testing.T) {
 		},
 		{
 			name: "year is lt 1",
-			res: dto.ReportTime{
+			res: &dto.ReportTime{
 				Year:  0,
 				Month: 1,
 			},
@@ -183,7 +183,7 @@ func TestTransactionService_GetReservationsReport(t *testing.T) {
 		},
 		{
 			name: "month is lt 1",
-			res: dto.ReportTime{
+			res: &dto.ReportTime{
 				Year:  2021,
 				Month: 0,
 			},
@@ -192,7 +192,7 @@ func TestTransactionService_GetReservationsReport(t *testing.T) {
 		},
 		{
 			name: "month is gt 12",
-			res: dto.ReportTime{
+			res: &dto.ReportTime{
 				Year:  2021,
 				Month: 13,
 			},

@@ -21,7 +21,7 @@ func NewTransactionService(
 	return &TransactionService{r: r, v: v}
 }
 
-func (s *TransactionService) CreateReplenishment(tr dto.Transaction) (uint64, error) {
+func (s *TransactionService) CreateReplenishment(tr *dto.Transaction) (uint64, error) {
 	if err := s.v.Struct(tr); err != nil {
 		return 0, &responses.ValidationErrResp{Message: err.Error()}
 	}
@@ -29,7 +29,7 @@ func (s *TransactionService) CreateReplenishment(tr dto.Transaction) (uint64, er
 	return s.r.CreateReplenishment(tr)
 }
 
-func (s *TransactionService) CreateWithdrawal(tr dto.Transaction) (uint64, error) {
+func (s *TransactionService) CreateWithdrawal(tr *dto.Transaction) (uint64, error) {
 	if err := s.v.Struct(tr); err != nil {
 		return 0, &responses.ValidationErrResp{Message: err.Error()}
 	}

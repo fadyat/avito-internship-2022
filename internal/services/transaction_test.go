@@ -17,7 +17,7 @@ var (
 
 type testCreateTransaction struct {
 	name   string
-	tr     dto.Transaction
+	tr     *dto.Transaction
 	expErr error
 	expRes uint64
 }
@@ -25,37 +25,37 @@ type testCreateTransaction struct {
 var createTransactionTests = []testCreateTransaction{
 	{
 		name:   "amount is lt 1",
-		tr:     dto.Transaction{UserID: 1, Amount: 0},
+		tr:     &dto.Transaction{UserID: 1, Amount: 0},
 		expErr: &responses.ValidationErrResp{},
 		expRes: 0,
 	},
 	{
 		name:   "user id is lt 1",
-		tr:     dto.Transaction{UserID: 0, Amount: 1},
+		tr:     &dto.Transaction{UserID: 0, Amount: 1},
 		expErr: &responses.ValidationErrResp{},
 		expRes: 0,
 	},
 	{
 		name:   "amount is gt 1000000",
-		tr:     dto.Transaction{UserID: 1, Amount: 1000001},
+		tr:     &dto.Transaction{UserID: 1, Amount: 1000001},
 		expErr: &responses.ValidationErrResp{},
 		expRes: 0,
 	},
 	{
 		name:   "missing user id",
-		tr:     dto.Transaction{Amount: 1},
+		tr:     &dto.Transaction{Amount: 1},
 		expErr: &responses.ValidationErrResp{},
 		expRes: 0,
 	},
 	{
 		name:   "missing amount",
-		tr:     dto.Transaction{UserID: 1},
+		tr:     &dto.Transaction{UserID: 1},
 		expErr: &responses.ValidationErrResp{},
 		expRes: 0,
 	},
 	{
 		name:   "no errors",
-		tr:     dto.Transaction{UserID: 1, Amount: 1},
+		tr:     &dto.Transaction{UserID: 1, Amount: 1},
 		expErr: nil,
 		expRes: 1,
 	},

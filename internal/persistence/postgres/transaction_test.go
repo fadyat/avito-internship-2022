@@ -10,7 +10,7 @@ import (
 
 type testReplenishment struct {
 	name   string
-	t      dto.Transaction
+	t      *dto.Transaction
 	expRes uint64
 	expErr error
 }
@@ -19,13 +19,13 @@ func TestTransactionRepo_CreateReplenishment(t *testing.T) {
 	tests := []testReplenishment{
 		{
 			name:   "no error",
-			t:      dto.Transaction{UserID: 1, Amount: 100},
+			t:      &dto.Transaction{UserID: 1, Amount: 100},
 			expRes: 2,
 			expErr: nil,
 		},
 		{
 			name:   "amount is zero",
-			t:      dto.Transaction{UserID: 1, Amount: 0},
+			t:      &dto.Transaction{UserID: 1, Amount: 0},
 			expErr: persistence.ErrNegativeAmount,
 			expRes: 0,
 		},
@@ -67,7 +67,7 @@ func TestTransactionRepo_CreateReplenishment(t *testing.T) {
 type testWithdrawal struct {
 	name     string
 	fillMock func(mock sqlmock.Sqlmock)
-	t        dto.Transaction
+	t        *dto.Transaction
 	expRes   uint64
 	expErr   error
 }
@@ -80,7 +80,7 @@ func TestTransactionRepo_CreateWithdrawal(t *testing.T) {
 	tests := []testWithdrawal{
 		{
 			name:   "no error",
-			t:      dto.Transaction{UserID: 1, Amount: 100},
+			t:      &dto.Transaction{UserID: 1, Amount: 100},
 			expRes: 2,
 			expErr: nil,
 			fillMock: func(mock sqlmock.Sqlmock) {
@@ -108,7 +108,7 @@ func TestTransactionRepo_CreateWithdrawal(t *testing.T) {
 			name:   "amount is zero",
 			expRes: 0,
 			expErr: persistence.ErrNegativeAmount,
-			t:      dto.Transaction{UserID: 1, Amount: 0},
+			t:      &dto.Transaction{UserID: 1, Amount: 0},
 			fillMock: func(mock sqlmock.Sqlmock) {
 				mock.ExpectBegin()
 				mock.ExpectRollback()
@@ -118,7 +118,7 @@ func TestTransactionRepo_CreateWithdrawal(t *testing.T) {
 			name:   "not enough money",
 			expRes: 0,
 			expErr: persistence.ErrInsufficientFunds,
-			t:      dto.Transaction{UserID: 1, Amount: 100},
+			t:      &dto.Transaction{UserID: 1, Amount: 100},
 			fillMock: func(mock sqlmock.Sqlmock) {
 				mock.ExpectBegin()
 				mock.ExpectQuery(bq).
