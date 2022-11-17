@@ -160,6 +160,58 @@ const docTemplate = `{
                 }
             }
         },
+        "/api/v1/transaction/cancel": {
+            "post": {
+                "description": "Cancel reservation of the user's balance from another service",
+                "tags": [
+                    "Transaction"
+                ],
+                "summary": "Cancel reservation of the user's balance",
+                "parameters": [
+                    {
+                        "description": "Reservation info",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.Reservation"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/responses.ReservationCancelled"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/responses.ErrorResp"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/responses.ErrorResp"
+                        }
+                    },
+                    "422": {
+                        "description": "Unprocessable Entity",
+                        "schema": {
+                            "$ref": "#/definitions/responses.ErrorResp"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/responses.ErrorResp"
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/transaction/release": {
             "post": {
                 "description": "Release of the user's balance to another service",
@@ -266,11 +318,11 @@ const docTemplate = `{
         },
         "/api/v1/transaction/reservation": {
             "post": {
-                "description": "Cancel reservation of the user's balance from another service",
+                "description": "Reservation of the user's balance from another service",
                 "tags": [
                     "Transaction"
                 ],
-                "summary": "Cancel reservation of the user's balance",
+                "summary": "Reservation of the user's balance",
                 "parameters": [
                     {
                         "description": "Reservation info",
@@ -283,10 +335,10 @@ const docTemplate = `{
                     }
                 ],
                 "responses": {
-                    "200": {
-                        "description": "OK",
+                    "201": {
+                        "description": "Created",
                         "schema": {
-                            "$ref": "#/definitions/responses.ReservationCancelled"
+                            "$ref": "#/definitions/responses.TransactionCreated"
                         }
                     },
                     "400": {

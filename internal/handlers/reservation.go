@@ -135,7 +135,7 @@ func (h *TransactionHandler) createRelease(c *fiber.Ctx) error {
 
 // cancelReservation godoc
 // @tags        Transaction
-// @router      /api/v1/transaction/reservation [post]
+// @router      /api/v1/transaction/cancel [post]
 // @summary     Cancel reservation of the user's balance
 // @description Cancel reservation of the user's balance from another service
 // @param       body body     dto.Reservation true "Reservation info"
