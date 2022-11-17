@@ -6,6 +6,7 @@ import (
 	"github.com/fadyat/avito-internship-2022/internal/models/dto"
 	"github.com/fadyat/avito-internship-2022/internal/persistence"
 	"testing"
+	"time"
 )
 
 type testReplenishment struct {
@@ -150,14 +151,66 @@ func TestTransactionRepo_CreateWithdrawal(t *testing.T) {
 
 type testGetUserTransactions struct {
 	name     string
-	fillMock func(mock sqlmock.Sqlmock)
+	fillMock func(mock sqlmock.Sqlmock, userID uint64, pag *models.Pagination, expRes []*models.Transaction)
 	userID   uint64
+	pag      *models.Pagination
 	expRes   []*models.Transaction
 	expErr   error
 }
 
 func TestTransactionRepo_GetUserTransactions(t *testing.T) {
-	t.Skip("not implemented")
+	var fixedTime = time.Now()
+
+	tests := []testGetUserTransactions{
+		{
+			name:   "no error",
+			userID: 1,
+			pag:    &models.Pagination{Page: 1, PerPage: 10, OrderBy: []string{"created_at"}},
+			expRes: []*models.Transaction{
+				{ID: 1, UserID: 1, Amount: 100, Type: models.Replenishment, CreatedAt: fixedTime},
+				{ID: 2, UserID: 1, Amount: 100, Type: models.Withdrawal, CreatedAt: fixedTime},
+			},
+			expErr: nil,
+			fillMock: func(mock sqlmock.Sqlmock, userID uint64, pag *models.Pagination, expRes []*models.Transaction) {
+				//q := fmt.Sprintf(
+				//	"SELECT (.+) FROM transactions ORDER BY %s LIMIT ? OFFSET ?",
+				//	strings.Join(pag.OrderBy, ", "),
+				//)
+				q := ``
+				//q := regexp.QuoteMeta(`
+				//	SELECT (.+) FROM transactions
+				//	WHERE ((user_id = ?))
+				//	ORDER BY created_at
+				//`)
+				row := sqlmock.NewRows([]string{"id", "user_id", "amount", "type", "created_at"})
+				for _, tr := range expRes {
+					row.AddRow(tr.ID, tr.UserID, tr.Amount, tr.Type, tr.CreatedAt)
+				}
+
+				mock.ExpectBegin()
+				mock.ExpectQuery(q).
+					WithArgs(userID, pag.PerPage, (pag.Page-1)*pag.PerPage).
+					WillReturnRows(row)
+
+				mock.ExpectCommit()
+			},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			db, mock := createConn(t)
+			defer func() { _ = db.Close() }()
+
+			tt.fillMock(mock, tt.userID, tt.pag, tt.expRes)
+
+			u := NewTransactionRepo(db)
+			res, err := u.GetUserTransactions(tt.userID, tt.pag)
+
+			compareErrors(t, err, tt.expErr)
+			compareResults(t, res, tt.expRes, mock)
+		})
+	}
 }
 
 type testGetUserTransactionsCount struct {

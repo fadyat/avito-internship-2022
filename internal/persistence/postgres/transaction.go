@@ -100,12 +100,12 @@ func (t *TransactionRepo) createWithdrawal(tr *dto.Transaction) (uint64, error) 
 	return id, nil
 }
 
-func (t *TransactionRepo) GetUserTransactions(userID, page, perPage uint64, orderBy []string) ([]*models.Transaction, error) {
-	ts, err := t.getUserTransactions(userID, page, perPage, orderBy)
+func (t *TransactionRepo) GetUserTransactions(userID uint64, pagination *models.Pagination) ([]*models.Transaction, error) {
+	ts, err := t.getUserTransactions(userID, pagination)
 	return ts, recastError(err)
 }
 
-func (t *TransactionRepo) getUserTransactions(userID, page, perPage uint64, orderBy []string) ([]*models.Transaction, error) {
+func (t *TransactionRepo) getUserTransactions(userID uint64, p *models.Pagination) ([]*models.Transaction, error) {
 	tx, err := t.c.Begin()
 	if err != nil {
 		return nil, err
@@ -114,9 +114,9 @@ func (t *TransactionRepo) getUserTransactions(userID, page, perPage uint64, orde
 
 	q := fmt.Sprintf(
 		"SELECT * FROM transactions WHERE user_id = $1 ORDER BY %s LIMIT $2 OFFSET $3",
-		strings.Join(orderBy, ", "),
+		strings.Join(p.OrderBy, ", "),
 	)
-	rows, err := tx.Query(q, userID, perPage, (page-1)*perPage)
+	rows, err := tx.Query(q, userID, p.PerPage, (p.Page-1)*p.PerPage)
 	if err != nil {
 		return nil, err
 	}

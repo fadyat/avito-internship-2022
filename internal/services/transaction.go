@@ -37,13 +37,13 @@ func (s *TransactionService) CreateWithdrawal(tr *dto.Transaction) (uint64, erro
 	return s.r.CreateWithdrawal(tr)
 }
 
-func (s *TransactionService) GetUserTransactions(userID string, page, perPage uint64, orderBy []string) ([]*models.Transaction, error) {
+func (s *TransactionService) GetUserTransactions(userID string, pagination *models.Pagination) ([]*models.Transaction, error) {
 	uid, err := helpers.ValidateUint64(userID, "required,numeric,gte=1", s.v)
 	if err != nil {
 		return nil, err
 	}
 
-	return s.r.GetUserTransactions(uid, page, perPage, orderBy)
+	return s.r.GetUserTransactions(uid, pagination)
 }
 
 func (s *TransactionService) GetUserTransactionsCount(userID string) (uint64, error) {

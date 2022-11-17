@@ -28,7 +28,7 @@ type IUserWalletRepo interface {
 type ITransactionRepo interface {
 	CreateReplenishment(tr *dto.Transaction) (uint64, error)
 	CreateWithdrawal(tr *dto.Transaction) (uint64, error)
-	GetUserTransactions(userID, page, perPage uint64, orderBy []string) ([]*models.Transaction, error)
+	GetUserTransactions(userID uint64, pagination *models.Pagination) ([]*models.Transaction, error)
 	GetUserTransactionsCount(userID uint64) (uint64, error)
 	iReservationRepo
 }

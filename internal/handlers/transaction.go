@@ -161,7 +161,7 @@ func (h *TransactionHandler) getUserTransactions(c *fiber.Ctx) error {
 	}
 	helpers.MakePaginationParamsCorrect(&pag)
 
-	ts, err := h.s.GetUserTransactions(c.Params("id"), pag.Page, pag.PerPage, pag.OrderBy)
+	ts, err := h.s.GetUserTransactions(c.Params("id"), &pag)
 	verr := &responses.ValidationErrResp{}
 	if errors.As(err, &verr) {
 		h.l.Debug("validation failed", zap.Error(err))
