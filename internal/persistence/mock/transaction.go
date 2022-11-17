@@ -27,7 +27,7 @@ func (t *TransactionRepo) CancelReservation(_ *dto.Reservation) (uint64, error) 
 	return 1, nil
 }
 
-func (t *TransactionRepo) GetUserTransactions(_, _, _ uint64, _ []string) ([]*models.Transaction, error) {
+func (t *TransactionRepo) GetUserTransactions(_ uint64, _ *models.Pagination) ([]*models.Transaction, error) {
 	return make([]*models.Transaction, 0), nil
 }
 

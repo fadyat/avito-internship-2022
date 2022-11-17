@@ -82,49 +82,53 @@ func TestTransactionService_CreateWithdrawal(t *testing.T) {
 }
 
 type testGetUserTransactions struct {
-	name    string
-	userID  string
-	page    uint64
-	perPage uint64
-	orderBy []string
-	expErr  error
-	expRes  []*models.Transaction
+	name   string
+	userID string
+	pag    *models.Pagination
+	expErr error
+	expRes []*models.Transaction
 }
 
 func TestTransactionService_GetUserTransactions(t *testing.T) {
 	tests := []testGetUserTransactions{
 		{
-			name:    "user id is lt 1",
-			userID:  "0",
-			page:    1,
-			perPage: 10,
-			orderBy: []string{"created_at"},
-			expErr:  &responses.ValidationErrResp{},
-			expRes:  nil,
+			name:   "user id is lt 1",
+			userID: "0",
+			pag: &models.Pagination{
+				Page:    1,
+				PerPage: 10,
+				OrderBy: []string{"created_at"},
+			},
+			expErr: &responses.ValidationErrResp{},
+			expRes: nil,
 		},
 		{
-			name:    "user id is gte 1",
-			userID:  "1",
-			page:    1,
-			perPage: 10,
-			orderBy: []string{"created_at"},
-			expErr:  nil,
-			expRes:  make([]*models.Transaction, 0),
+			name:   "user id is gte 1",
+			userID: "1",
+			pag: &models.Pagination{
+				Page:    1,
+				PerPage: 10,
+				OrderBy: []string{"created_at"},
+			},
+			expErr: nil,
+			expRes: make([]*models.Transaction, 0),
 		},
 		{
-			name:    "user id is not a number",
-			userID:  "a",
-			page:    1,
-			perPage: 10,
-			orderBy: []string{"created_at"},
-			expErr:  &responses.ValidationErrResp{},
-			expRes:  nil,
+			name:   "user id is not a number",
+			userID: "a",
+			pag: &models.Pagination{
+				Page:    1,
+				PerPage: 10,
+				OrderBy: []string{"created_at"},
+			},
+			expErr: &responses.ValidationErrResp{},
+			expRes: nil,
 		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			res, err := transactionService.GetUserTransactions(tt.userID, tt.page, tt.perPage, tt.orderBy)
+			res, err := transactionService.GetUserTransactions(tt.userID, tt.pag)
 			require.Equal(t, reflect.TypeOf(err), reflect.TypeOf(tt.expErr))
 			require.Equal(t, res, tt.expRes)
 		})
