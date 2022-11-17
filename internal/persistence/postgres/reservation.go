@@ -1,7 +1,6 @@
 package postgres
 
 import (
-	"context"
 	"fmt"
 	"github.com/fadyat/avito-internship-2022/internal/models"
 	"github.com/fadyat/avito-internship-2022/internal/models/dto"
@@ -15,11 +14,11 @@ func (t *TransactionRepo) CreateReservation(tr dto.Reservation) (uint64, error) 
 }
 
 func (t *TransactionRepo) createReservation(tr dto.Reservation) (uint64, error) {
-	tx, err := t.c.Begin(context.Background())
+	tx, err := t.c.Begin()
 	if err != nil {
 		return 0, err
 	}
-	defer func() { _ = tx.Rollback(context.Background()) }()
+	defer func() { _ = tx.Rollback() }()
 
 	// extra validation if validation is not done on the service level
 	if tr.Amount <= 0 {
@@ -30,12 +29,12 @@ func (t *TransactionRepo) createReservation(tr dto.Reservation) (uint64, error) 
 	rq := `INSERT INTO reservations (user_id, service_id, order_id, amount, status)
 		   VALUES ($1, $2, $3, $4, $5) RETURNING id
 	`
-	err = tx.QueryRow(context.Background(), rq, tr.UserID, tr.ServiceID, tr.OrderID, tr.Amount, models.Pending).Scan(&id)
+	err = tx.QueryRow(rq, tr.UserID, tr.ServiceID, tr.OrderID, tr.Amount, models.Pending).Scan(&id)
 	if err != nil {
 		return 0, err
 	}
 
-	if err := tx.Commit(context.Background()); err != nil {
+	if err := tx.Commit(); err != nil {
 		return 0, err
 	}
 
@@ -48,15 +47,15 @@ func (t *TransactionRepo) CreateRelease(tr dto.Reservation) (uint64, error) {
 }
 
 func (t *TransactionRepo) createRelease(tr dto.Reservation) (uint64, error) {
-	tx, err := t.c.Begin(context.Background())
+	tx, err := t.c.Begin()
 	if err != nil {
 		return 0, err
 	}
-	defer func() { _ = tx.Rollback(context.Background()) }()
+	defer func() { _ = tx.Rollback() }()
 
 	var balance uint64
 	b := `SELECT balance FROM user_wallets WHERE user_id = $1`
-	err = tx.QueryRow(context.Background(), b, tr.UserID).Scan(&balance)
+	err = tx.QueryRow(b, tr.UserID).Scan(&balance)
 	if err != nil {
 		return 0, err
 	}
@@ -66,13 +65,13 @@ func (t *TransactionRepo) createRelease(tr dto.Reservation) (uint64, error) {
 	}
 
 	wq := `UPDATE user_wallets SET balance = balance - $1 WHERE user_id = $2`
-	_, err = tx.Exec(context.Background(), wq, tr.Amount, tr.UserID)
+	_, err = tx.Exec(wq, tr.Amount, tr.UserID)
 	if err != nil {
 		return 0, err
 	}
 
 	tq := `INSERT INTO transactions (user_id, amount, type) VALUES ($1, $2, $3)`
-	_, err = tx.Exec(context.Background(), tq, tr.UserID, tr.Amount, models.Withdrawal)
+	_, err = tx.Exec(tq, tr.UserID, tr.Amount, models.Withdrawal)
 	if err != nil {
 		return 0, err
 	}
@@ -89,13 +88,13 @@ func (t *TransactionRepo) createRelease(tr dto.Reservation) (uint64, error) {
 
 	var id uint64
 	err = tx.QueryRow(
-		context.Background(), rq, models.Released, tr.UserID, tr.ServiceID, tr.OrderID, tr.Amount, models.Pending,
+		rq, models.Released, tr.UserID, tr.ServiceID, tr.OrderID, tr.Amount, models.Pending,
 	).Scan(&id)
 	if err != nil {
 		return 0, err
 	}
 
-	if err := tx.Commit(context.Background()); err != nil {
+	if err := tx.Commit(); err != nil {
 		return 0, err
 	}
 
@@ -108,11 +107,11 @@ func (t *TransactionRepo) CancelReservation(tr dto.Reservation) (uint64, error) 
 }
 
 func (t *TransactionRepo) cancelReservation(tr dto.Reservation) (uint64, error) {
-	tx, err := t.c.Begin(context.Background())
+	tx, err := t.c.Begin()
 	if err != nil {
 		return 0, err
 	}
-	defer func() { _ = tx.Rollback(context.Background()) }()
+	defer func() { _ = tx.Rollback() }()
 
 	rq := `UPDATE reservations SET status = $1, updated_at = NOW()
            WHERE id = (
@@ -126,13 +125,13 @@ func (t *TransactionRepo) cancelReservation(tr dto.Reservation) (uint64, error) 
 
 	var id uint64
 	err = tx.QueryRow(
-		context.Background(), rq, models.Cancelled, tr.UserID, tr.ServiceID, tr.OrderID, tr.Amount, models.Pending,
+		rq, models.Cancelled, tr.UserID, tr.ServiceID, tr.OrderID, tr.Amount, models.Pending,
 	).Scan(&id)
 	if err != nil {
 		return 0, err
 	}
 
-	if err := tx.Commit(context.Background()); err != nil {
+	if err := tx.Commit(); err != nil {
 		return 0, err
 	}
 
@@ -145,17 +144,17 @@ func (t *TransactionRepo) GetUserTransactions(userID, page, perPage uint64, orde
 }
 
 func (t *TransactionRepo) getUserTransactions(userID, page, perPage uint64, orderBy []string) ([]*models.Transaction, error) {
-	tx, err := t.c.Begin(context.Background())
+	tx, err := t.c.Begin()
 	if err != nil {
 		return nil, err
 	}
-	defer func() { _ = tx.Rollback(context.Background()) }()
+	defer func() { _ = tx.Rollback() }()
 
 	q := fmt.Sprintf(
 		"SELECT * FROM transactions WHERE user_id = $1 ORDER BY %s LIMIT $2 OFFSET $3",
 		strings.Join(orderBy, ", "),
 	)
-	rows, err := tx.Query(context.Background(), q, userID, perPage, (page-1)*perPage)
+	rows, err := tx.Query(q, userID, perPage, (page-1)*perPage)
 	if err != nil {
 		return nil, err
 	}
@@ -167,7 +166,7 @@ func (t *TransactionRepo) getUserTransactions(userID, page, perPage uint64, orde
 		ts = append(ts, &tr)
 	}
 
-	if err := tx.Commit(context.Background()); err != nil {
+	if err := tx.Commit(); err != nil {
 		return nil, err
 	}
 
@@ -180,20 +179,20 @@ func (t *TransactionRepo) GetUserTransactionsCount(userID uint64) (uint64, error
 }
 
 func (t *TransactionRepo) getUserTransactionsCount(userID uint64) (uint64, error) {
-	tx, err := t.c.Begin(context.Background())
+	tx, err := t.c.Begin()
 	if err != nil {
 		return 0, err
 	}
-	defer func() { _ = tx.Rollback(context.Background()) }()
+	defer func() { _ = tx.Rollback() }()
 
 	q := `SELECT COUNT(*) FROM transactions WHERE user_id = $1`
 	var cnt uint64
-	err = tx.QueryRow(context.Background(), q, userID).Scan(&cnt)
+	err = tx.QueryRow(q, userID).Scan(&cnt)
 	if err != nil {
 		return 0, err
 	}
 
-	if err := tx.Commit(context.Background()); err != nil {
+	if err := tx.Commit(); err != nil {
 		return 0, err
 	}
 
@@ -206,11 +205,11 @@ func (t *TransactionRepo) GetReservationsReport(tm dto.ReportTime) ([]*models.Re
 }
 
 func (t *TransactionRepo) getReservationsReport(tm dto.ReportTime) ([]*models.ReservationReport, error) {
-	tx, err := t.c.Begin(context.Background())
+	tx, err := t.c.Begin()
 	if err != nil {
 		return nil, err
 	}
-	defer func() { _ = tx.Rollback(context.Background()) }()
+	defer func() { _ = tx.Rollback() }()
 
 	rq := `SELECT service_id, order_id, SUM(amount) AS amount, COUNT(*) AS count
 		   FROM reservations
@@ -220,7 +219,7 @@ func (t *TransactionRepo) getReservationsReport(tm dto.ReportTime) ([]*models.Re
 		   GROUP BY service_id, order_id
 	`
 
-	rows, err := tx.Query(context.Background(), rq, tm.Year, tm.Month, models.Released)
+	rows, err := tx.Query(rq, tm.Year, tm.Month, models.Released)
 	if err != nil {
 		return nil, err
 	}
@@ -232,7 +231,7 @@ func (t *TransactionRepo) getReservationsReport(tm dto.ReportTime) ([]*models.Re
 		rs = append(rs, &r)
 	}
 
-	if err := tx.Commit(context.Background()); err != nil {
+	if err := tx.Commit(); err != nil {
 		return nil, err
 	}
 

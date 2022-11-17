@@ -1,18 +1,17 @@
 package postgres
 
 import (
-	"context"
-	"github.com/jackc/pgx/v5"
+	"github.com/jmoiron/sqlx"
 )
 
 type HealthRepo struct {
-	c *pgx.Conn
+	c *sqlx.DB
 }
 
-func NewHealthRepo(c *pgx.Conn) *HealthRepo {
+func NewHealthRepo(c *sqlx.DB) *HealthRepo {
 	return &HealthRepo{c: c}
 }
 
 func (hr *HealthRepo) Ping() error {
-	return hr.c.Ping(context.Background())
+	return hr.c.Ping()
 }

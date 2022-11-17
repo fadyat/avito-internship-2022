@@ -5,11 +5,11 @@ import (
 	"github.com/fadyat/avito-internship-2022/internal/services"
 	"github.com/go-playground/validator/v10"
 	"github.com/gofiber/fiber/v2"
-	"github.com/jackc/pgx/v5"
+	"github.com/jmoiron/sqlx"
 	"go.uber.org/zap"
 )
 
-func InitRoutes(app *fiber.App, psql *pgx.Conn, log *zap.Logger, validate *validator.Validate) {
+func InitRoutes(app *fiber.App, psql *sqlx.DB, log *zap.Logger, validate *validator.Validate) {
 	v1 := app.Group("/api/v1")
 	log.Debug("created v1 group")
 

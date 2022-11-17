@@ -7,9 +7,10 @@ require (
 	github.com/go-playground/validator/v10 v10.11.1
 	github.com/gocarina/gocsv v0.0.0-20221105105431-c8ef78125b99
 	github.com/gofiber/fiber/v2 v2.39.0
-	github.com/jackc/pgx/v5 v5.0.4
+	github.com/jmoiron/sqlx v1.3.5
 	github.com/joho/godotenv v1.4.0
 	github.com/kelseyhightower/envconfig v1.4.0
+	github.com/lib/pq v1.10.7
 	github.com/stretchr/testify v1.8.0
 	github.com/swaggo/swag v1.8.7
 	go.uber.org/zap v1.23.0
@@ -25,8 +26,6 @@ require (
 	github.com/go-openapi/swag v0.22.3 // indirect
 	github.com/go-playground/locales v0.14.0 // indirect
 	github.com/go-playground/universal-translator v0.18.0 // indirect
-	github.com/jackc/pgpassfile v1.0.0 // indirect
-	github.com/jackc/pgservicefile v0.0.0-20200714003250-2b9c44734f2b // indirect
 	github.com/josharian/intern v1.0.0 // indirect
 	github.com/klauspost/compress v1.15.12 // indirect
 	github.com/leodido/go-urn v1.2.1 // indirect

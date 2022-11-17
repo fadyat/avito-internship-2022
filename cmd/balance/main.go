@@ -1,7 +1,6 @@
 package main
 
 import (
-	"context"
 	swagger "github.com/arsmn/fiber-swagger/v2"
 	_ "github.com/fadyat/avito-internship-2022/docs"
 	"github.com/fadyat/avito-internship-2022/internal/config"
@@ -12,9 +11,10 @@ import (
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gofiber/fiber/v2/middleware/recover"
 	"github.com/gofiber/fiber/v2/middleware/requestid"
-	"github.com/jackc/pgx/v5"
+	"github.com/jmoiron/sqlx"
 	"github.com/joho/godotenv"
 	"github.com/kelseyhightower/envconfig"
+	_ "github.com/lib/pq"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 	"os"
@@ -43,10 +43,11 @@ func main() {
 
 	psql, err := initDB(cfg)
 	defer func() {
-		if err = psql.Close(context.Background()); err != nil {
+		if err = psql.Close(); err != nil {
 			logs.Fatal("failed to close db connection", zap.Error(err))
 		}
 	}()
+
 	if err != nil {
 		logs.Fatal("failed to init db", zap.Error(err))
 	}
@@ -87,8 +88,8 @@ func initConfig(logs *zap.Logger, validate *validator.Validate) (*config.HTTPCon
 	return &cfg, nil
 }
 
-func initDB(cfg *config.HTTPConfig) (*pgx.Conn, error) {
-	psql, err := pgx.Connect(context.Background(), cfg.GetConnectionString())
+func initDB(cfg *config.HTTPConfig) (*sqlx.DB, error) {
+	psql, err := sqlx.Connect("postgres", cfg.GetConnectionString())
 	if err != nil {
 		return nil, err
 	}

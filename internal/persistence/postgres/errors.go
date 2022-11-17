@@ -1,16 +1,16 @@
 package postgres
 
 import (
+	"database/sql"
 	"errors"
 	"github.com/fadyat/avito-internship-2022/internal/persistence"
-	"github.com/jackc/pgx/v5"
-	"github.com/jackc/pgx/v5/pgconn"
+	"github.com/lib/pq"
 )
 
 func recastError(err error) error {
-	var pgErr *pgconn.PgError
-	if errors.As(err, &pgErr) {
-		switch pgErr.Code {
+	var pqErr *pq.Error
+	if errors.As(err, &pqErr) {
+		switch pqErr.Code {
 		case "23505":
 			return persistence.ErrUniqueViolation
 		case "23503":
@@ -18,7 +18,7 @@ func recastError(err error) error {
 		case "42703":
 			return persistence.ErrInvalidColumn
 		}
-	} else if errors.Is(err, pgx.ErrNoRows) {
+	} else if errors.Is(err, sql.ErrNoRows) {
 		return persistence.ErrNotFound
 	}
 

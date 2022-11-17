@@ -1,17 +1,16 @@
 package postgres
 
 import (
-	"context"
 	"github.com/fadyat/avito-internship-2022/internal/models"
 	"github.com/fadyat/avito-internship-2022/internal/models/dto"
-	"github.com/jackc/pgx/v5"
+	"github.com/jmoiron/sqlx"
 )
 
 type OuterServiceRepo struct {
-	c *pgx.Conn
+	c *sqlx.DB
 }
 
-func NewOuterServiceRepo(c *pgx.Conn) *OuterServiceRepo {
+func NewOuterServiceRepo(c *sqlx.DB) *OuterServiceRepo {
 	return &OuterServiceRepo{c: c}
 }
 
@@ -21,20 +20,20 @@ func (s *OuterServiceRepo) CreateService(os dto.OuterService) (uint64, error) {
 }
 
 func (s *OuterServiceRepo) createService(os dto.OuterService) (uint64, error) {
-	tx, err := s.c.Begin(context.Background())
+	tx, err := s.c.Begin()
 	if err != nil {
 		return 0, err
 	}
-	defer func() { _ = tx.Rollback(context.Background()) }()
+	defer func() { _ = tx.Rollback() }()
 
-	var id uint64
 	q := "INSERT INTO services (name, url) VALUES ($1, $2) RETURNING id"
-	err = tx.QueryRow(context.Background(), q, os.Name, os.URL).Scan(&id)
+	var id uint64
+	err = tx.QueryRow(q, os.Name, os.URL).Scan(&id)
 	if err != nil {
 		return 0, err
 	}
 
-	if err := tx.Commit(context.Background()); err != nil {
+	if err := tx.Commit(); err != nil {
 		return 0, err
 	}
 
@@ -47,20 +46,20 @@ func (s *OuterServiceRepo) GetServiceByID(id uint64) (*models.OuterService, erro
 }
 
 func (s *OuterServiceRepo) getServiceByID(id uint64) (*models.OuterService, error) {
-	tx, err := s.c.Begin(context.Background())
+	tx, err := s.c.Begin()
 	if err != nil {
 		return nil, err
 	}
-	defer func() { _ = tx.Rollback(context.Background()) }()
+	defer func() { _ = tx.Rollback() }()
 
 	var os models.OuterService
 	q := "SELECT * FROM services WHERE id = $1 LIMIT 1"
-	err = tx.QueryRow(context.Background(), q, id).Scan(&os.ID, &os.Name, &os.URL)
+	err = tx.QueryRow(q, id).Scan(&os.ID, &os.Name, &os.URL)
 	if err != nil {
 		return nil, err
 	}
 
-	if err := tx.Commit(context.Background()); err != nil {
+	if err := tx.Commit(); err != nil {
 		return nil, err
 	}
 
@@ -73,14 +72,14 @@ func (s *OuterServiceRepo) GetAllServices() ([]*models.OuterService, error) {
 }
 
 func (s *OuterServiceRepo) getAllServices() ([]*models.OuterService, error) {
-	tx, err := s.c.Begin(context.Background())
+	tx, err := s.c.Begin()
 	if err != nil {
 		return nil, err
 	}
-	defer func() { _ = tx.Rollback(context.Background()) }()
+	defer func() { _ = tx.Rollback() }()
 
 	q := "SELECT * FROM services"
-	rows, err := tx.Query(context.Background(), q)
+	rows, err := tx.Query(q)
 	if err != nil {
 		return nil, err
 	}
