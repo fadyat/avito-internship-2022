@@ -159,8 +159,9 @@ type testGetUserTransactions struct {
 }
 
 func TestTransactionRepo_GetUserTransactions(t *testing.T) {
-	var fixedTime = time.Now()
+	t.Skip("not implemented")
 
+	var fixedTime = time.Now()
 	tests := []testGetUserTransactions{
 		{
 			name:   "no error",
@@ -172,16 +173,9 @@ func TestTransactionRepo_GetUserTransactions(t *testing.T) {
 			},
 			expErr: nil,
 			fillMock: func(mock sqlmock.Sqlmock, userID uint64, pag *models.Pagination, expRes []*models.Transaction) {
-				//q := fmt.Sprintf(
-				//	"SELECT (.+) FROM transactions ORDER BY %s LIMIT ? OFFSET ?",
-				//	strings.Join(pag.OrderBy, ", "),
-				//)
+
+				// todo: implement
 				q := ``
-				//q := regexp.QuoteMeta(`
-				//	SELECT (.+) FROM transactions
-				//	WHERE ((user_id = ?))
-				//	ORDER BY created_at
-				//`)
 				row := sqlmock.NewRows([]string{"id", "user_id", "amount", "type", "created_at"})
 				for _, tr := range expRes {
 					row.AddRow(tr.ID, tr.UserID, tr.Amount, tr.Type, tr.CreatedAt)
