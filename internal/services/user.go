@@ -21,7 +21,7 @@ func NewUserWalletService(
 	return &UserWalletService{r: r, v: v}
 }
 
-func (s *UserWalletService) CreateUserWallet(w dto.UserWallet) (uint64, error) {
+func (s *UserWalletService) CreateUserWallet(w *dto.UserWallet) (uint64, error) {
 	if err := s.v.Struct(w); err != nil {
 		return 0, &responses.ValidationErrResp{Message: err.Error()}
 	}

@@ -7,7 +7,7 @@ import (
 
 type UserWalletRepo struct{}
 
-func (m *UserWalletRepo) CreateUserWallet(w dto.UserWallet) (uint64, error) {
+func (m *UserWalletRepo) CreateUserWallet(w *dto.UserWallet) (uint64, error) {
 	return w.UserID, nil
 }
 

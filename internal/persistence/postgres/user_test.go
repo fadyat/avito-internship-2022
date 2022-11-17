@@ -10,7 +10,7 @@ import (
 
 type testCreateUserWallet struct {
 	name   string
-	w      dto.UserWallet
+	w      *dto.UserWallet
 	expRes uint64
 	expErr error
 }
@@ -19,7 +19,7 @@ func TestUserWalletRepo_CreateUserWallet(t *testing.T) {
 	tests := []testCreateUserWallet{
 		{
 			name:   "no error",
-			w:      dto.UserWallet{UserID: 1},
+			w:      &dto.UserWallet{UserID: 1},
 			expRes: 1,
 			expErr: nil,
 		},

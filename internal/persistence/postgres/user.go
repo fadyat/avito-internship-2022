@@ -14,12 +14,12 @@ func NewUserWalletRepo(c *sqlx.DB) *UserWalletRepo {
 	return &UserWalletRepo{c: c}
 }
 
-func (u *UserWalletRepo) CreateUserWallet(w dto.UserWallet) (uint64, error) {
+func (u *UserWalletRepo) CreateUserWallet(w *dto.UserWallet) (uint64, error) {
 	id, err := u.createUserWallet(w)
 	return id, recastError(err)
 }
 
-func (u *UserWalletRepo) createUserWallet(w dto.UserWallet) (uint64, error) {
+func (u *UserWalletRepo) createUserWallet(w *dto.UserWallet) (uint64, error) {
 	tx, err := u.c.Begin()
 	if err != nil {
 		return 0, err

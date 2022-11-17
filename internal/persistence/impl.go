@@ -20,7 +20,7 @@ type IHealthRepo interface {
 }
 
 type IUserWalletRepo interface {
-	CreateUserWallet(w dto.UserWallet) (uint64, error)
+	CreateUserWallet(w *dto.UserWallet) (uint64, error)
 	GetUserWalletByID(id uint64) (*models.UserWallet, error)
 	GetAllWallets() ([]*models.UserWallet, error)
 }

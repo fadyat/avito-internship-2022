@@ -17,7 +17,7 @@ var (
 
 type testCreateUserWallet struct {
 	name   string
-	wallet dto.UserWallet
+	wallet *dto.UserWallet
 	expErr error
 	expRes uint64
 }
@@ -26,19 +26,19 @@ func TestUserWalletService_CreateUserWallet(t *testing.T) {
 	tests := []testCreateUserWallet{
 		{
 			name:   "user_id is gt 0",
-			wallet: dto.UserWallet{UserID: 1},
+			wallet: &dto.UserWallet{UserID: 1},
 			expErr: nil,
 			expRes: 1,
 		},
 		{
 			name:   "user_id is lt 1",
-			wallet: dto.UserWallet{UserID: 0},
+			wallet: &dto.UserWallet{UserID: 0},
 			expErr: &responses.ValidationErrResp{},
 			expRes: 0,
 		},
 		{
 			name:   "missing user_id",
-			wallet: dto.UserWallet{},
+			wallet: &dto.UserWallet{},
 			expErr: &responses.ValidationErrResp{},
 			expRes: 0,
 		},

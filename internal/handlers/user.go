@@ -44,7 +44,7 @@ func (h *UserWalletHandler) createWallet(c *fiber.Ctx) error {
 		})
 	}
 
-	id, err := h.s.CreateUserWallet(body)
+	id, err := h.s.CreateUserWallet(&body)
 	var verr *responses.ValidationErrResp
 	if errors.As(err, &verr) {
 		h.l.Debug("validation failed", zap.Error(err))
