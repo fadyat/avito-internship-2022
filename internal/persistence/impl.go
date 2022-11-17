@@ -41,7 +41,7 @@ type iReservationRepo interface {
 }
 
 type IOuterServiceRepo interface {
-	CreateService(os dto.OuterService) (uint64, error)
+	CreateService(os *dto.OuterService) (uint64, error)
 	GetServiceByID(id uint64) (*models.OuterService, error)
 	GetAllServices() ([]*models.OuterService, error)
 }

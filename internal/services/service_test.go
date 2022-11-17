@@ -17,7 +17,7 @@ var (
 
 type testCreateOuterService struct {
 	name    string
-	service dto.OuterService
+	service *dto.OuterService
 	expErr  error
 	expRes  uint64
 }
@@ -26,31 +26,31 @@ func TestOuterServiceService_CreateService(t *testing.T) {
 	tests := []testCreateOuterService{
 		{
 			name:    "name is empty",
-			service: dto.OuterService{Name: "", URL: "https://aboba.com"},
+			service: &dto.OuterService{Name: "", URL: "https://aboba.com"},
 			expErr:  &responses.ValidationErrResp{},
 			expRes:  0,
 		},
 		{
 			name:    "url is empty",
-			service: dto.OuterService{Name: "aboba", URL: ""},
+			service: &dto.OuterService{Name: "aboba", URL: ""},
 			expErr:  nil,
 			expRes:  1,
 		},
 		{
 			name:    "name and url are empty",
-			service: dto.OuterService{Name: "", URL: ""},
+			service: &dto.OuterService{Name: "", URL: ""},
 			expErr:  &responses.ValidationErrResp{},
 			expRes:  0,
 		},
 		{
 			name:    "name and url are not empty",
-			service: dto.OuterService{Name: "aboba", URL: "https://aboba.com"},
+			service: &dto.OuterService{Name: "aboba", URL: "https://aboba.com"},
 			expErr:  nil,
 			expRes:  1,
 		},
 		{
 			name:    "url is not valid",
-			service: dto.OuterService{Name: "aboba", URL: "aboba.com"},
+			service: &dto.OuterService{Name: "aboba", URL: "aboba.com"},
 			expErr:  &responses.ValidationErrResp{},
 			expRes:  0,
 		},

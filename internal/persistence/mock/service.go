@@ -7,7 +7,7 @@ import (
 
 type OuterServiceRepo struct{}
 
-func (m *OuterServiceRepo) CreateService(_ dto.OuterService) (uint64, error) {
+func (m *OuterServiceRepo) CreateService(_ *dto.OuterService) (uint64, error) {
 	return 1, nil
 }
 

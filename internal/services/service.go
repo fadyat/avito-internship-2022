@@ -21,7 +21,7 @@ func NewOuterServiceService(
 	return &OuterServiceService{r: r, v: v}
 }
 
-func (s *OuterServiceService) CreateService(os dto.OuterService) (uint64, error) {
+func (s *OuterServiceService) CreateService(os *dto.OuterService) (uint64, error) {
 	if err := s.v.Struct(os); err != nil {
 		return 0, &responses.ValidationErrResp{Message: err.Error()}
 	}

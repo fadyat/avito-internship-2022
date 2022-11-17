@@ -44,7 +44,7 @@ func (h *OuterServiceHandler) createService(c *fiber.Ctx) error {
 		})
 	}
 
-	id, err := h.s.CreateService(body)
+	id, err := h.s.CreateService(&body)
 	var verr *responses.ValidationErrResp
 	if errors.As(err, &verr) {
 		h.l.Debug("validation failed", zap.Error(err))

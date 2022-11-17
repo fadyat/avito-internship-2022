@@ -14,12 +14,12 @@ func NewOuterServiceRepo(c *sqlx.DB) *OuterServiceRepo {
 	return &OuterServiceRepo{c: c}
 }
 
-func (s *OuterServiceRepo) CreateService(os dto.OuterService) (uint64, error) {
+func (s *OuterServiceRepo) CreateService(os *dto.OuterService) (uint64, error) {
 	id, err := s.createService(os)
 	return id, recastError(err)
 }
 
-func (s *OuterServiceRepo) createService(os dto.OuterService) (uint64, error) {
+func (s *OuterServiceRepo) createService(os *dto.OuterService) (uint64, error) {
 	tx, err := s.c.Begin()
 	if err != nil {
 		return 0, err

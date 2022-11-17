@@ -16,7 +16,7 @@ type IUserWalletService interface {
 }
 
 type IOuterServiceService interface {
-	CreateService(os dto.OuterService) (uint64, error)
+	CreateService(os *dto.OuterService) (uint64, error)
 	GetAllServices() ([]*models.OuterService, error)
 	GetServiceByID(id string) (*models.OuterService, error)
 }

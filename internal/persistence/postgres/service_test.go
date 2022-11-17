@@ -10,7 +10,7 @@ import (
 
 type testCreateService struct {
 	name   string
-	s      dto.OuterService
+	s      *dto.OuterService
 	expRes uint64
 	expErr error
 }
@@ -19,13 +19,13 @@ func TestOuterServiceRepo_CreateService(t *testing.T) {
 	tests := []testCreateService{
 		{
 			name:   "no error",
-			s:      dto.OuterService{Name: "test"},
+			s:      &dto.OuterService{Name: "test"},
 			expRes: 1,
 			expErr: nil,
 		},
 		{
 			name:   "no errors url",
-			s:      dto.OuterService{Name: "test", URL: "https://test.com"},
+			s:      &dto.OuterService{Name: "test", URL: "https://test.com"},
 			expRes: 1,
 			expErr: nil,
 		},
