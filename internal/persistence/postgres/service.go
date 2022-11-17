@@ -91,5 +91,9 @@ func (s *OuterServiceRepo) getAllServices() ([]*models.OuterService, error) {
 		services = append(services, &os)
 	}
 
+	if err := tx.Commit(); err != nil {
+		return nil, err
+	}
+
 	return services, nil
 }

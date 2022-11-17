@@ -53,9 +53,13 @@ func (u *UserWalletRepo) getUserWalletByID(id uint64) (*models.UserWallet, error
 	defer func() { _ = tx.Rollback() }()
 
 	var w models.UserWallet
-	q := "SELECT * FROM user_wallets WHERE user_id = $1 LIMIT 1"
+	q := "SELECT * FROM user_wallets WHERE user_id = $1"
 	err = tx.QueryRow(q, id).Scan(&w.UserID, &w.Balance)
 	if err != nil {
+		return nil, err
+	}
+
+	if err := tx.Commit(); err != nil {
 		return nil, err
 	}
 
@@ -85,6 +89,10 @@ func (u *UserWalletRepo) getAllWallets() ([]*models.UserWallet, error) {
 		var w models.UserWallet
 		_ = rows.Scan(&w.UserID, &w.Balance)
 		ws = append(ws, &w)
+	}
+
+	if err := tx.Commit(); err != nil {
+		return nil, err
 	}
 
 	return ws, nil

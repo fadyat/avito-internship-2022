@@ -1,10 +1,12 @@
 package postgres
 
 import (
+	"fmt"
 	"github.com/fadyat/avito-internship-2022/internal/models"
 	"github.com/fadyat/avito-internship-2022/internal/models/dto"
 	"github.com/fadyat/avito-internship-2022/internal/persistence"
 	"github.com/jmoiron/sqlx"
+	"strings"
 )
 
 type TransactionRepo struct {
@@ -96,4 +98,65 @@ func (t *TransactionRepo) createWithdrawal(tr dto.Transaction) (uint64, error) {
 	}
 
 	return id, nil
+}
+
+func (t *TransactionRepo) GetUserTransactions(userID, page, perPage uint64, orderBy []string) ([]*models.Transaction, error) {
+	ts, err := t.getUserTransactions(userID, page, perPage, orderBy)
+	return ts, recastError(err)
+}
+
+func (t *TransactionRepo) getUserTransactions(userID, page, perPage uint64, orderBy []string) ([]*models.Transaction, error) {
+	tx, err := t.c.Begin()
+	if err != nil {
+		return nil, err
+	}
+	defer func() { _ = tx.Rollback() }()
+
+	q := fmt.Sprintf(
+		"SELECT * FROM transactions WHERE user_id = $1 ORDER BY %s LIMIT $2 OFFSET $3",
+		strings.Join(orderBy, ", "),
+	)
+	rows, err := tx.Query(q, userID, perPage, (page-1)*perPage)
+	if err != nil {
+		return nil, err
+	}
+
+	var ts []*models.Transaction
+	for rows.Next() {
+		var tr models.Transaction
+		_ = rows.Scan(&tr.ID, &tr.UserID, &tr.Amount, &tr.Type, &tr.CreatedAt)
+		ts = append(ts, &tr)
+	}
+
+	if err := tx.Commit(); err != nil {
+		return nil, err
+	}
+
+	return ts, nil
+}
+
+func (t *TransactionRepo) GetUserTransactionsCount(userID uint64) (uint64, error) {
+	count, err := t.getUserTransactionsCount(userID)
+	return count, recastError(err)
+}
+
+func (t *TransactionRepo) getUserTransactionsCount(userID uint64) (uint64, error) {
+	tx, err := t.c.Begin()
+	if err != nil {
+		return 0, err
+	}
+	defer func() { _ = tx.Rollback() }()
+
+	q := `SELECT COUNT(*) FROM transactions WHERE user_id = $1`
+	var cnt uint64
+	err = tx.QueryRow(q, userID).Scan(&cnt)
+	if err != nil {
+		return 0, err
+	}
+
+	if err := tx.Commit(); err != nil {
+		return 0, err
+	}
+
+	return cnt, nil
 }
